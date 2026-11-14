@@ -1,0 +1,1007 @@
+<!doctype html>
+<!--
+  =====================================================================
+  EMPEIRYA — prototype website
+  ---------------------------------------------------------------------
+  An AI companion that captures someone's life as it happens — voice,
+  photos, video — asks the right questions back, and turns a season of
+  it into a hardcover book. Built around "lessons, not only memories".
+
+  How to run: just double-click this file. No server or install needed.
+  (Fonts load from Google Fonts when online; without internet the page
+  falls back to system fonts and still works.)
+
+  Files:
+    css/styles.css      look of the website
+    css/book-pages.css  look of the pages inside the books (shared with /books)
+    js/main.js          everything interactive
+    js/qr.js            draws the decorative QR codes
+    books/*.html        print versions of the two sample books
+    pdf/*.pdf           the first two books as PDFs
+
+  Page order: prototype bar → nav → hero → quote → look inside (five
+              sample books) → how it works (the AI companion) → from
+              life to book (step-by-step) → in your own hand
+              (handwriting) → why (openable covers) → pricing → join
+              → footer
+  =====================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Empeirya</title>
+  <meta name="description" content="Empeirya is an AI companion that turns the moments you record — voice, photos, video — into a hardcover book of what you lived through and what it taught you.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=GFS+Didot&family=Commissioner:wght@300;400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Caveat:wght@500;700&family=Kalam:wght@300;400&family=Akaya+Kanadaka&family=Gloria+Hallelujah&family=Tiro+Devanagari+Hindi&family=Tiro+Devanagari+Sanskrit&family=Tiro+Kannada&display=swap">
+  <link rel="stylesheet" href="css/book-pages.css?v=1794660947">
+  <link rel="stylesheet" href="css/styles.css?v=1794660947">
+</head>
+<body>
+
+<!-- Reusable drawings. Defined once here, then used anywhere with
+     <svg><use href="#olive"/></svg>. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <!-- Olive branch: the brand emblem (Greek symbol of wisdom and peace) -->
+  <symbol id="olive" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M32 58C32 40 30 22 22 6"/><path d="M32 58C32 40 34 22 42 6"/></g><g fill="currentColor"><ellipse cx="24" cy="16" rx="5.5" ry="2.2" transform="rotate(-35 24 16)"/><ellipse cx="18" cy="24" rx="5.5" ry="2.2" transform="rotate(20 18 24)"/><ellipse cx="27" cy="30" rx="5.5" ry="2.2" transform="rotate(-40 27 30)"/><ellipse cx="22" cy="40" rx="5.5" ry="2.2" transform="rotate(25 22 40)"/><ellipse cx="40" cy="16" rx="5.5" ry="2.2" transform="rotate(35 40 16)"/><ellipse cx="46" cy="24" rx="5.5" ry="2.2" transform="rotate(-20 46 24)"/><ellipse cx="37" cy="30" rx="5.5" ry="2.2" transform="rotate(40 37 30)"/><ellipse cx="42" cy="40" rx="5.5" ry="2.2" transform="rotate(-25 42 40)"/><circle cx="29" cy="47" r="2.2"/><circle cx="36" cy="49" r="2.2"/></g></symbol>
+  <!-- Heart: emblem for the baby book -->
+  <symbol id="heart" viewBox="0 0 64 64"><path fill="currentColor" d="M32 54C18 44 8 35 8 23a12 12 0 0 1 24-4 12 12 0 0 1 24 4c0 12-10 21-24 31z"/></symbol>
+  <!-- Small footprint for the "first steps" picture -->
+  <symbol id="foot" viewBox="-12 -24 24 40"><g fill="#8C6F56"><ellipse cx="0" cy="2" rx="7" ry="12"/><circle cx="-5.5" cy="-14" r="2.6"/><circle cx="-1.5" cy="-16.5" r="2.4"/><circle cx="2.5" cy="-16" r="2.2"/><circle cx="5.5" cy="-13.5" r="2"/><circle cx="7.2" cy="-10.3" r="1.7"/></g></symbol>
+  <!-- North star: emblem for the founder book -->
+  <symbol id="star" viewBox="0 0 64 64"><path fill="currentColor" d="M32 4c2 14 6 22 12 28-6 6-10 14-12 28-2-14-6-22-12-28 6-6 10-14 12-28z"/><path fill="currentColor" opacity=".65" d="M51 8c.8 5 2.4 8.2 5 10.5-2.6 2.3-4.2 5.5-5 10.5-.8-5-2.4-8.2-5-10.5 2.6-2.3 4.2-5.5 5-10.5zM13 38c.8 5 2.4 8.2 5 10.5-2.6 2.3-4.2 5.5-5 10.5-.8-5-2.4-8.2-5-10.5 2.6-2.3 4.2-5.5 5-10.5z"/></symbol>
+  <!-- Compass: emblem for the "new country" book -->
+  <symbol id="compass" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="32" cy="32" r="23"/><path d="M32 3v6M32 55v6M3 32h6M55 32h6" stroke-linecap="round"/></g><path fill="currentColor" d="M32 15 38 32 32 49 26 32Z"/><circle cx="32" cy="32" r="3.2" fill="currentColor"/></symbol>
+  <!-- Interlocked rings: emblem for the first-date book -->
+  <symbol id="rings" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.6"><circle cx="24.5" cy="32" r="14"/><circle cx="39.5" cy="32" r="14"/></g></symbol>
+</svg>
+
+
+<!-- ===== PROTOTYPE BAR: name switcher. Delete this block when going live. ===== -->
+<div class="proto" role="region" aria-label="Prototype controls">
+  <div class="wrap">
+    <b>Prototype</b><span>Try a name:</span>
+    <div class="names" id="names">
+      <button type="button" data-n="empeirya" aria-pressed="true">Empeirya</button>
+      <button type="button" data-n="empeiria" aria-pressed="false">Empeiria</button>
+      <button type="button" data-n="anubhav" aria-pressed="false">Anubhav</button>
+      <button type="button" data-n="phronesis" aria-pressed="false">Phronesis</button>
+      <button type="button" data-n="hindsight" aria-pressed="false">Hindsight</button>
+    </div>
+    <span class="meaning" id="meaning"></span>
+  </div>
+</div>
+
+
+<!-- ===== NAVIGATION ===== -->
+<nav>
+  <div class="wrap">
+    <a class="mark" href="#top"><svg><use href="#olive"/></svg><span data-brand>Empeirya</span></a>
+    <div class="navlinks">
+      <a href="#inside">The books</a><a href="#how">How it works</a><a href="#journey">From life to book</a><a href="#handwritten">Handwriting</a><a href="#pricing">Pricing</a>
+    </div>
+    <a class="btn sm" href="#join">Join early</a>
+  </div>
+</nav>
+
+
+<!-- ===== HERO: headline + interactive 3D book with cover designer ===== -->
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="hero-copy">
+      <div class="gloss"><span class="gk" data-native>ἐμπειρία</span><span id="gloss"></span></div>
+      <h1>Everything you learned, <em>in one book</em> worth passing on.</h1>
+      <p class="lede"><span data-brand>Empeirya</span> listens as you live — voice, video, photos, chat. It asks like a biographer and writes like one too. When the chapter ends, a hardcover arrives at your door.</p>
+      <div class="ctas">
+        <a class="btn" href="#journey">Watch a book being born</a>
+        <a class="btn ghost" href="#inside">Look inside the books</a>
+      </div>
+    </div>
+
+    <div class="hero-art">
+      <!-- The 3D book: five faces arranged in 3D by CSS (see .book3d in styles.css). -->
+      <div class="scene" id="scene">
+        <div class="bob">
+          <div class="book3d enter" id="book3d">
+            <div class="b-back"></div>
+            <div class="b-pages"></div>
+            <div class="b-top"></div>
+            <div class="b-spine"><span data-title>What Engineering Taught Me</span></div>
+            <div class="b-front"><div class="cover">
+              <svg class="emb"><use href="#olive"/></svg>
+              <div class="ct" data-title>What Engineering Taught Me</div><div class="cr"></div>
+              <div class="ca" data-author>Madhukar V</div>
+              <div class="cb" data-brand>Empeirya</div>
+            </div></div>
+          </div>
+        </div>
+      </div>
+      <div class="shadow" aria-hidden="true"></div>
+    </div>
+  </div>
+</header>
+
+
+<!-- ===== QUOTE BAND ===== -->
+<div class="quote">
+  <div class="wrap">
+    <span class="gk">πάθει μάθος</span>
+    <p>"Learning comes through suffering."<small>Aeschylus, Agamemnon, 458 BC. The oldest idea behind this book.</small></p>
+  </div>
+</div>
+
+
+<!-- ===== LOOK INSIDE: two sample flipbooks =====
+     Structure of a book:
+       <div class="fb">                 the open book (two pages wide)
+         <div class="leaf">             one sheet of paper
+           <div class="face front">     right-hand page
+           <div class="face back">      left-hand page after turning
+     To add a page spread, add another .leaf. js/main.js does the rest. -->
+<section class="inside" id="inside">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">01 · Look inside</span>
+      <h2>Five sample books. Pick one and turn the pages.</h2>
+      <p class="lede">Every book here was made the way yours will be: lived first, spoken aloud, written by <span data-brand>Empeirya</span>. Click a page or use the arrows.</p>
+    </div>
+    <div class="shelf" role="tablist" aria-label="Sample books" id="shelf">
+      <button type="button" role="tab" aria-selected="true" data-b="0"><i class="dot" style="--c:#4E5A32"></i><b>What Engineering Taught Me</b><span>Madhukar V · four years of college</span></button>
+      <button type="button" role="tab" aria-selected="false" data-b="1"><i class="dot" style="--c:#5B7186"></i><b>The Year You Taught Us</b><span>Ananya &amp; Rohan · a first year as parents</span></button>
+      <button type="button" role="tab" aria-selected="false" data-b="2"><i class="dot" style="--c:#6B2328"></i><b>The Company We Built</b><span>Sofía Martínez · the founder years</span></button>
+      <button type="button" role="tab" aria-selected="false" data-b="3"><i class="dot" style="--c:#3C4F5C"></i><b>Ten Thousand Miles From Home</b><span>Liam O'Connor · a new country</span></button>
+      <button type="button" role="tab" aria-selected="false" data-b="4"><i class="dot" style="--c:#7A4452"></i><b>The Beginning of Us</b><span>Camille &amp; Noah · one first date, kept</span></button>
+    </div>
+  </div>
+  <div class="stage" id="stage">
+
+    <!-- ---------- BOOK 1: What Engineering Taught Me (5 sheets = 10 pages) ---------- -->
+    <div class="fb closed" id="fb1" tabindex="0" aria-label="What Engineering Taught Me, use arrow keys to turn pages">
+      <!-- Sheet 1: front cover / dedication -->
+      <div class="leaf">
+        <div class="face front"><div class="cover">
+          <svg class="emb"><use href="#olive"/></svg>
+          <div class="ct" data-title>What Engineering Taught Me</div><div class="cr"></div>
+          <div class="ca" data-author>Madhukar V</div><div class="cb" data-brand>Empeirya</div>
+        </div></div>
+        <div class="face back endpaper"><div class="pg">
+          <div class="dedic">For every first-year student who thinks there is still plenty of time. There's less than you think, and it's enough if you start now.<small>Madhukar</small></div>
+        </div></div>
+      </div>
+      <!-- Sheet 2: title page / contents -->
+      <div class="leaf">
+        <div class="face front"><div class="pg titlepg">
+          <span class="tb" data-brand>Empeirya</span>
+          <h4 data-title>What Engineering Taught Me</h4>
+          <span class="sub">Lessons from four years, written by</span>
+          <span style="font-size:1.25em" data-author>Madhukar V</span>
+          <span class="num">i</span>
+        </div></div>
+        <div class="face back"><div class="pg">
+          <span class="runhead">Contents</span>
+          <ul class="toc">
+            <li><b>I</b><div>Skills<i>The goal I nearly lost</i></div><span>3</span></li>
+            <li><b>II</b><div>People<i>Friends with a vision</i></div><span>17</span></li>
+            <li><b>III</b><div>Distractions<i>Busy is not the same as building</i></div><span>29</span></li>
+            <li><b>IV</b><div>Hindsight<i>What I'd tell my first-year self</i></div><span>41</span></li>
+            <li><b>V</b><div>Letters for later<i>Sealed until the right day</i></div><span>52</span></li>
+          </ul>
+          <span class="num">ii</span>
+        </div></div>
+      </div>
+      <!-- Sheet 3: chapter I opener / the entry (part 1) -->
+      <div class="leaf">
+        <div class="face front"><div class="pg chap">
+          <span class="roman">I</span><h4>Skills</h4>
+          <blockquote>"Four years is enough time to become genuinely useful to an industry, as long as you don't drift."</blockquote>
+          <span class="meta">Told by voice · 5 min · written with Empeirya</span>
+          <span class="num">3</span>
+        </div></div>
+        <div class="face back"><div class="pg">
+          <span class="runhead">I · Skills</span>
+          <h4>The goal I nearly lost</h4>
+          <span class="sub">Engineering, years one to four</span>
+          <dl>
+            <div><dt>What happened</dt><dd>Engineering gives you four years and a hundred reasons to spend them on something else: marks for their own sake, trends, whatever everyone around you is doing.</dd></div>
+            <div><dt>What I felt</dt><dd>Busy, but unsure it was leading anywhere. Being busy felt like progress. It isn't the same thing.</dd></div>
+            <div><dt>What I tried</dt><dd>I kept coming back to one question: what can I build that a real company would need?</dd></div>
+          </dl>
+          <span class="num">4</span>
+        </div></div>
+      </div>
+      <!-- Sheet 4: the entry (part 2, the lessons) / chapter II opener -->
+      <div class="leaf">
+        <div class="face front"><div class="pg">
+          <dl>
+            <div><dt>What I learned</dt><dd class="hl">Never divert from the goal. Use the four years to build real industry skills. Everything else can wait; this can't.</dd></div>
+            <div><dt>What I'd do differently</dt><dd>Start building real things in the first year, not the last one.</dd></div>
+            <div><dt>If you're starting now</dt><dd>Every semester, ask yourself: what can I do today that I couldn't do six months ago?</dd></div>
+          </dl>
+          <div class="qr"><canvas class="qrc" data-seed="7" width="25" height="25"></canvas><p><b>Hear it in his voice</b>Scan to play the recording this page came from.</p></div>
+          <span class="num">5</span>
+        </div></div>
+        <div class="face back"><div class="pg chap">
+          <span class="roman">II</span><h4>People</h4>
+          <blockquote>"Build a network of good friends who have a vision and actually work for it. They will pull you forward for the rest of your life."</blockquote>
+          <span class="meta">Typed late one night · kept word for word</span>
+          <span class="num">17</span>
+        </div></div>
+      </div>
+      <!-- Sheet 5: letter for later / back cover -->
+      <div class="leaf">
+        <div class="face front"><div class="pg">
+          <span class="runhead">V · Letters for later</span>
+          <h4>Open on your first day of college</h4>
+          <div class="envelope"><span class="seal" data-initial>E</span></div>
+          <p class="letter-to">For the next engineer in the family</p>
+          <p class="sub" style="text-align:center">In the app, this letter stays sealed until that day. In print, it comes as a tucked-in envelope.</p>
+          <span class="num">52</span>
+        </div></div>
+        <div class="face back backcover"><div>
+          <svg><use href="#olive"/></svg>
+          <span data-brand>Empeirya</span>
+          <small>Printed for <span data-author>Madhukar V</span></small>
+        </div></div>
+      </div>
+    </div>
+
+    <!-- ---------- BOOK 2: The Year You Taught Us (7 sheets = 14 pages) ----------
+         Has its own cover colours (set inline below) so the cover designer
+         only changes Book 1. Pictures are hand-drawn SVG stand-ins for the
+         family's own photos. -->
+    <div class="fb closed" id="fb2" tabindex="0" hidden style="--cloth:#5B7186;--foil:#F1E3C6" aria-label="The Year You Taught Us, use arrow keys to turn pages">
+      <!-- Sheet 1: cover / dedication -->
+      <div class="leaf">
+        <div class="face front"><div class="cover">
+          <svg class="emb"><use href="#heart"/></svg>
+          <div class="ct">The Year You Taught Us</div><div class="cr"></div>
+          <div class="ca">Ananya &amp; Rohan</div><div class="cb" data-brand>Empeirya</div>
+        </div></div>
+        <div class="face back endpaper"><div class="pg">
+          <div class="dedic">For Kiara. One day you'll read how little we knew, and how much you taught us anyway.<small>Mom &amp; Dad</small></div>
+        </div></div>
+      </div>
+      <!-- Sheet 2: title / contents -->
+      <div class="leaf">
+        <div class="face front"><div class="pg titlepg">
+          <span class="tb" data-brand>Empeirya</span>
+          <h4>The Year You Taught Us</h4>
+          <span class="sub">Our first year as parents, from the day you were born to your first birthday</span>
+          <span style="font-size:1.25em">Ananya &amp; Rohan</span>
+          <span class="num">i</span>
+        </div></div>
+        <div class="face back"><div class="pg">
+          <span class="runhead">Contents</span>
+          <ul class="toc">
+            <li><b>0</b><div>The day you arrived<i>Nobody hands you a manual</i></div><span>1</span></li>
+            <li><b>1–3</b><div>The nights<i>Sleeping in two-hour pieces</i></div><span>9</span></li>
+            <li><b>8</b><div>The fever<i>Two in the morning</i></div><span>23</span></li>
+            <li><b>11</b><div>First steps<i>Three of them, then the sofa</i></div><span>34</span></li>
+            <li><b>12</b><div>One year<i>And a letter for later</i></div><span>41</span></li>
+          </ul>
+          <span class="num">ii</span>
+        </div></div>
+      </div>
+      <!-- Sheet 3: month 0 photo / month 0 entry -->
+      <div class="leaf">
+        <div class="face front"><div class="pg">
+          <span class="runhead">Month 0</span>
+          <h4>The day you arrived</h4>
+          <figure class="photo">
+            <svg viewBox="0 0 200 140" role="img" aria-label="Illustration: a newborn's hand holding an adult finger, with a hospital band">
+              <rect width="200" height="140" fill="#F3E6DA"/>
+              <path d="M0 30 Q50 20 100 32 T200 28 M0 70 Q60 60 110 72 T200 66 M0 112 Q50 100 100 114 T200 108" stroke="#E8D5C3" stroke-width="7" fill="none"/>
+              <rect x="88" y="56" width="130" height="32" rx="16" fill="#D9A27E"/>
+              <ellipse cx="100" cy="72" rx="8" ry="11" fill="#E9C0A4"/>
+              <rect x="66" y="96" width="44" height="44" fill="#F2C4A6"/>
+              <rect x="62" y="104" width="52" height="11" rx="4" fill="#FFFFFF" stroke="#9DB4C8" stroke-width="1.5"/>
+              <rect x="80" y="107" width="16" height="5" rx="1" fill="#9DB4C8"/>
+              <ellipse cx="88" cy="90" rx="25" ry="19" fill="#F2C4A6"/>
+              <ellipse cx="66" cy="82" rx="7" ry="11" fill="#F2C4A6" stroke="#E0A887" stroke-width="1" transform="rotate(25 66 82)"/>
+              <ellipse cx="80" cy="66" rx="6" ry="10" fill="#F2C4A6" stroke="#E0A887" stroke-width="1"/>
+              <ellipse cx="91" cy="64" rx="6" ry="10.5" fill="#F2C4A6" stroke="#E0A887" stroke-width="1"/>
+              <ellipse cx="102" cy="65" rx="6" ry="10" fill="#F2C4A6" stroke="#E0A887" stroke-width="1"/>
+              <ellipse cx="112" cy="68" rx="5" ry="8.5" fill="#F2C4A6" stroke="#E0A887" stroke-width="1"/>
+            </svg>
+            <figcaption>4:52 a.m. · 2.9 kg · holding on already</figcaption>
+          </figure>
+          <span class="num">1</span>
+        </div></div>
+        <div class="face back"><div class="pg">
+          <span class="runhead">Month 0 · The day you arrived</span>
+          <dl>
+            <div><dt>What happened</dt><dd>Kiara arrived at 4:52 in the morning after nineteen hours of labour, much louder than anyone expected.</dd></div>
+            <div><dt>What I felt</dt><dd>Love, yes. And terror. The nurse showed me how to hold her head, then left the room. I didn't move for an hour.</dd></div>
+            <div><dt>What I learned</dt><dd class="hl">You don't need to know everything on day one. You only need to show up for the next feed.</dd></div>
+          </dl>
+          <span class="num">2</span>
+        </div></div>
+      </div>
+      <!-- Sheet 4: the nights / the fever -->
+      <div class="leaf">
+        <div class="face front"><div class="pg">
+          <span class="runhead">Months 1–3</span>
+          <h4>The nights</h4>
+          <figure class="photo r md">
+            <svg viewBox="0 0 200 140" role="img" aria-label="Illustration: a clock at 3:12 a.m. beside a milk bottle, moon in the window">
+              <rect width="200" height="140" fill="#2E3A55"/>
+              <rect x="128" y="10" width="62" height="48" rx="3" fill="#3B4A6B"/>
+              <circle cx="170" cy="28" r="10" fill="#F4E9C8"/>
+              <circle cx="176" cy="24" r="9" fill="#3B4A6B"/>
+              <circle cx="140" cy="20" r="1.3" fill="#F4E9C8"/><circle cx="152" cy="44" r="1" fill="#F4E9C8"/><circle cx="183" cy="48" r="1.2" fill="#F4E9C8"/>
+              <rect x="0" y="112" width="200" height="28" fill="#26304A"/>
+              <circle cx="58" cy="74" r="32" fill="#F4EEDF" stroke="#C9B48E" stroke-width="3"/>
+              <circle cx="58" cy="74" r="2.5" fill="#2E3A55"/>
+              <line x1="58" y1="74" x2="76" y2="76" stroke="#2E3A55" stroke-width="3.5" stroke-linecap="round"/>
+              <line x1="58" y1="74" x2="82.7" y2="66" stroke="#2E3A55" stroke-width="2.2" stroke-linecap="round"/>
+              <rect x="128" y="70" width="30" height="46" rx="8" fill="#DCE4EC"/>
+              <rect x="128" y="88" width="30" height="28" rx="6" fill="#FFFFFF"/>
+              <rect x="132" y="60" width="22" height="12" rx="3" fill="#E9A6A6"/>
+              <ellipse cx="143" cy="55" rx="6" ry="7" fill="#F1C9A5"/>
+            </svg>
+            <figcaption>3:12 a.m., again</figcaption>
+          </figure>
+          <p>For eleven weeks we slept in two-hour pieces. I cried in the bathroom more than once, then went back in.</p>
+          <p class="hl">Ask for help before you're desperate. The week Rohan took the 2 a.m. feed, everything changed.</p>
+          <span class="num">9</span>
+        </div></div>
+        <div class="face back"><div class="pg">
+          <span class="runhead">Month 8</span>
+          <h4>The fever</h4>
+          <dl>
+            <div><dt>What happened</dt><dd>103°F at two in the morning. We drove to the hospital in our night clothes.</dd></div>
+            <div><dt>What we tried</dt><dd>We had written down every feed and every temperature with the time. The doctor said it was the most useful thing we brought.</dd></div>
+            <div><dt>What I learned</dt><dd class="hl">Write things down. In a panic, your notes remember what you can't.</dd></div>
+          </dl>
+          <span class="num">23</span>
+        </div></div>
+      </div>
+      <!-- Sheet 5: first steps / one year -->
+      <div class="leaf">
+        <div class="face front"><div class="pg">
+          <span class="runhead">Month 11</span>
+          <h4>First steps</h4>
+          <figure class="photo">
+            <svg viewBox="0 0 200 140" role="img" aria-label="Illustration: a trail of small footprints across a wooden floor towards a toy block">
+              <rect width="200" height="140" fill="#EADFCB"/>
+              <path d="M0 35H200M0 70H200M0 105H200M60 0V35M150 35V70M40 70V105M120 105V140" stroke="#DCCDB2" stroke-width="2"/>
+              <use href="#foot" x="16" y="88" width="18" height="30" transform="rotate(62 25 103)"/>
+              <use href="#foot" x="46" y="66" width="18" height="30" transform="rotate(70 55 81)"/>
+              <use href="#foot" x="80" y="78" width="18" height="30" transform="rotate(62 89 93)"/>
+              <use href="#foot" x="112" y="56" width="18" height="30" transform="rotate(72 121 71)"/>
+              <rect x="152" y="58" width="28" height="28" rx="3" fill="#E9A6A6"/>
+              <rect x="160" y="66" width="12" height="12" rx="2" fill="#F7EFE2"/>
+            </svg>
+            <figcaption>Three steps, then straight into the sofa</figcaption>
+          </figure>
+          <p>She let go of the table, took three steps and fell into my arms. Eleven months of tired nights, and this was the payoff.</p>
+          <span class="num">34</span>
+        </div></div>
+        <div class="face back"><div class="pg">
+          <span class="runhead">Month 12</span>
+          <h4>One year</h4>
+          <figure class="photo sm r">
+            <svg viewBox="0 0 200 140" role="img" aria-label="Illustration: a small birthday cake with one candle">
+              <rect width="200" height="140" fill="#F6E3E3"/>
+              <rect x="0" y="112" width="200" height="28" fill="#EBCFCF"/>
+              <ellipse cx="100" cy="112" rx="62" ry="8" fill="#FFFFFF"/>
+              <rect x="56" y="70" width="88" height="40" rx="6" fill="#F7EFE2"/>
+              <path d="M56 78Q66 88 76 78T96 78T116 78T136 78T144 76V70H56Z" fill="#E9A6A6"/>
+              <rect x="97" y="44" width="6" height="26" rx="2" fill="#9DB4C8"/>
+              <path d="M100 30C95 37 96 42 100 43C104 42 105 37 100 30Z" fill="#F2B544"/>
+              <circle cx="72" cy="96" r="2.5" fill="#E9A6A6"/><circle cx="100" cy="98" r="2.5" fill="#9DB4C8"/><circle cx="128" cy="96" r="2.5" fill="#E9A6A6"/>
+            </svg>
+            <figcaption>Day 365</figcaption>
+          </figure>
+          <div class="nums">
+            <div><b>365</b><span>days</span></div>
+            <div><b>1,100+</b><span>night feeds</span></div>
+            <div><b>9.1 kg</b><span>from 2.9 kg</span></div>
+            <div><b>4</b><span>teeth</span></div>
+          </div>
+          <span class="num">41</span>
+        </div></div>
+      </div>
+      <!-- Sheet 6: advice / letter for later -->
+      <div class="leaf">
+        <div class="face front"><div class="pg">
+          <span class="runhead">Before you begin</span>
+          <h4>What I'd tell any new parent</h4>
+          <ol class="tips">
+            <li><span>Lower the bar for everything except sleep and kindness. The house can be a mess.</span></li>
+            <li><span>Take one photo every day. You won't remember month four, and you'll want to.</span></li>
+            <li><span>Your baby doesn't need a perfect parent. She needs the same tired one, again and again.</span></li>
+          </ol>
+          <div class="qr"><canvas class="qrc" data-seed="19" width="25" height="25"></canvas><p><b>Hear her first laugh</b>Scan to play the recording from month four.</p></div>
+          <span class="num">42</span>
+        </div></div>
+        <div class="face back"><div class="pg">
+          <span class="runhead">Letters for later</span>
+          <h4>Open on your 18th birthday</h4>
+          <div class="envelope"><span class="seal" data-initial>E</span></div>
+          <p class="letter-to">For Kiara</p>
+          <p class="sub" style="text-align:center">In the app, this letter stays sealed until Kiara turns eighteen.</p>
+          <span class="num">43</span>
+        </div></div>
+      </div>
+      <!-- Sheet 7: blank page for the child / back cover -->
+      <div class="leaf">
+        <div class="face front"><div class="pg ruled">
+          <span class="runhead">Your page</span>
+          <p class="hand" style="margin-top:auto;margin-bottom:auto">Left blank for Kiara to write in, someday.</p>
+          <span class="num">44</span>
+        </div></div>
+        <div class="face back backcover"><div>
+          <svg><use href="#heart"/></svg>
+          <span data-brand>Empeirya</span>
+          <small>Printed for the Rao family</small>
+        </div></div>
+      </div>
+    </div>
+
+    <!-- ---------- BOOK 3: The Company We Built (4 sheets = 8 pages) ---------- -->
+    <div class="fb closed" id="fb3" tabindex="0" hidden style="--cloth:#6B2328;--foil:#E3C27E" aria-label="The Company We Built, use arrow keys to turn pages">
+      <!-- Sheet 1: cover / dedication -->
+      <div class="leaf">
+        <div class="face front"><div class="cover">
+          <svg class="emb"><use href="#star"/></svg>
+          <div class="ct">The Company We Built</div><div class="cr"></div>
+          <div class="ca">Sofía Martínez</div><div class="cb" data-brand>Empeirya</div>
+        </div></div>
+        <div class="face back endpaper"><div class="pg">
+          <div class="dedic">For the four of us in the garage — and for Mamá, who lent us the garage and pretended not to worry.<small>Sofía</small></div>
+        </div></div>
+      </div>
+      <!-- Sheet 2: title page / contents -->
+      <div class="leaf">
+        <div class="face front"><div class="pg titlepg">
+          <span class="tb" data-brand>Empeirya</span>
+          <h4>The Company We Built</h4>
+          <span class="sub">Five years of a startup, told honestly, by</span>
+          <span style="font-size:1.25em">Sofía Martínez</span>
+          <span class="num">i</span>
+        </div></div>
+        <div class="face back"><div class="pg">
+          <span class="runhead">Contents</span>
+          <ul class="toc">
+            <li><b>I</b><div>The garage<i>Two laptops and a folding table</i></div><span>3</span></li>
+            <li><b>II</b><div>Eleven nos<i>The twelfth question</i></div><span>15</span></li>
+            <li><b>III</b><div>Payroll<i>The month we nearly missed it</i></div><span>27</span></li>
+            <li><b>IV</b><div>The day it worked<i>A stranger paid us</i></div><span>39</span></li>
+            <li><b>V</b><div>Letters for later<i>For the next founder</i></div><span>50</span></li>
+          </ul>
+          <span class="num">ii</span>
+        </div></div>
+      </div>
+      <!-- Sheet 3: chapter II opener / the entry -->
+      <div class="leaf">
+        <div class="face front"><div class="pg chap">
+          <span class="roman">II</span><h4>Eleven nos</h4>
+          <blockquote>"Eleven investors said no. The twelfth asked a question we couldn't answer — and that question became the company."</blockquote>
+          <span class="meta">Told by voice · 12 min · on the night bus home</span>
+          <span class="num">15</span>
+        </div></div>
+        <div class="face back"><div class="pg">
+          <span class="runhead">II · Eleven nos</span>
+          <h4>The twelfth question</h4>
+          <dl>
+            <div><dt>What happened</dt><dd>Our eleventh pitch ended in four minutes. The twelfth investor also said no — but first she asked who our customer really was. We argued about it in the lift, all the way down.</dd></div>
+            <div><dt>What I felt</dt><dd>Embarrassed, then strangely light. Someone had finally pointed at the actual hole in the boat.</dd></div>
+            <div><dt>What we tried</dt><dd>We wrote down every question we had failed to answer that year, and built the next version to answer them.</dd></div>
+          </dl>
+          <span class="num">16</span>
+        </div></div>
+      </div>
+      <!-- Sheet 4: the lessons / back cover -->
+      <div class="leaf">
+        <div class="face front"><div class="pg">
+          <dl>
+            <div><dt>What I learned</dt><dd class="hl">A no is a free lesson. Collect enough of them and they become the plan.</dd></div>
+            <div><dt>What I'd do differently</dt><dd>Talk to customers before the deck, not after. The garage was comfortable; the market wasn't in it.</dd></div>
+            <div><dt>If you're starting now</dt><dd>Write down the question that ends each meeting. The one you can't answer yet is the work.</dd></div>
+          </dl>
+          <div class="qr"><canvas class="qrc" data-seed="11" width="25" height="25"></canvas><p><b>Watch demo day</b>Scan to see the video — shaking hands and all.</p></div>
+          <span class="num">17</span>
+        </div></div>
+        <div class="face back backcover"><div>
+          <svg><use href="#star"/></svg>
+          <span data-brand>Empeirya</span>
+          <small>Printed for Sofía Martínez</small>
+        </div></div>
+      </div>
+    </div>
+
+    <!-- ---------- BOOK 4: Ten Thousand Miles From Home (4 sheets = 8 pages) ---------- -->
+    <div class="fb closed" id="fb4" tabindex="0" hidden style="--cloth:#3C4F5C;--foil:#D9CDB2" aria-label="Ten Thousand Miles From Home, use arrow keys to turn pages">
+      <!-- Sheet 1: cover / dedication -->
+      <div class="leaf">
+        <div class="face front"><div class="cover">
+          <svg class="emb"><use href="#compass"/></svg>
+          <div class="ct">Ten Thousand Miles From Home</div><div class="cr"></div>
+          <div class="ca">Liam O'Connor</div><div class="cb" data-brand>Empeirya</div>
+        </div></div>
+        <div class="face back endpaper"><div class="pg">
+          <div class="dedic">For Mum. I did eat properly. Mostly.<small>Liam</small></div>
+        </div></div>
+      </div>
+      <!-- Sheet 2: title page / contents -->
+      <div class="leaf">
+        <div class="face front"><div class="pg titlepg">
+          <span class="tb" data-brand>Empeirya</span>
+          <h4>Ten Thousand Miles From Home</h4>
+          <span class="sub">Leaving Dublin, landing in Melbourne, written by</span>
+          <span style="font-size:1.25em">Liam O'Connor</span>
+          <span class="num">i</span>
+        </div></div>
+        <div class="face back"><div class="pg">
+          <span class="runhead">Contents</span>
+          <ul class="toc">
+            <li><b>0</b><div>The one-way ticket<i>Twenty-three kilos of a whole life</i></div><span>1</span></li>
+            <li><b>1</b><div>Arrivals<i>Nobody here knows your name</i></div><span>7</span></li>
+            <li><b>4</b><div>The first winter<i>Dark at four o'clock</i></div><span>19</span></li>
+            <li><b>9</b><div>Two homes<i>A word that changed its meaning</i></div><span>31</span></li>
+            <li><b>12</b><div>Letters for later<i>For whoever leaves next</i></div><span>44</span></li>
+          </ul>
+          <span class="num">ii</span>
+        </div></div>
+      </div>
+      <!-- Sheet 3: chapter opener / the entry -->
+      <div class="leaf">
+        <div class="face front"><div class="pg chap">
+          <span class="roman">4</span><h4>The first winter</h4>
+          <blockquote>"Loneliness isn't being alone. It's being unknown. The cure turned out to be one person at a time."</blockquote>
+          <span class="meta">Filmed on a phone · 2 min · a QR code in the printed book</span>
+          <span class="num">19</span>
+        </div></div>
+        <div class="face back"><div class="pg">
+          <span class="runhead">4 · The first winter</span>
+          <h4>Dark at four o'clock</h4>
+          <dl>
+            <div><dt>What happened</dt><dd>Month four. Dark when I left work, dark when I woke. I knew the barista's order better than she knew my name — because she didn't.</dd></div>
+            <div><dt>What I felt</dt><dd>Invisible. Not sad, exactly — unwitnessed. My funny stories had nobody who knew the people in them.</dd></div>
+            <div><dt>What I tried</dt><dd>One month of saying yes to everything: five-a-side, a terrible book club, a colleague's cousin's birthday. Two of those stuck.</dd></div>
+          </dl>
+          <span class="num">20</span>
+        </div></div>
+      </div>
+      <!-- Sheet 4: the lessons / back cover -->
+      <div class="leaf">
+        <div class="face front"><div class="pg">
+          <dl>
+            <div><dt>What I learned</dt><dd class="hl">Home is not a place you left. It's a thing you learn to carry, and to build twice.</dd></div>
+            <div><dt>What I'd do differently</dt><dd>Call home on Sundays from the start. Guilt grows quietly in the gap between calls.</dd></div>
+            <div><dt>If you're leaving now</dt><dd>Pack less. Say yes for a month. Learn one local joke and tell it badly.</dd></div>
+          </dl>
+          <div class="qr"><canvas class="qrc" data-seed="23" width="25" height="25"></canvas><p><b>Hear the first voicemail home</b>Scan to play it — airport announcements and all.</p></div>
+          <span class="num">21</span>
+        </div></div>
+        <div class="face back backcover"><div>
+          <svg><use href="#compass"/></svg>
+          <span data-brand>Empeirya</span>
+          <small>Printed for the O'Connor family</small>
+        </div></div>
+      </div>
+    </div>
+
+    <!-- ---------- BOOK 5: The Beginning of Us (4 sheets = 8 pages) ----------
+         A first date written down the same week, sealed as a keepsake and
+         read again five years later. -->
+    <div class="fb closed" id="fb5" tabindex="0" hidden style="--cloth:#7A4452;--foil:#F0D9C0" aria-label="The Beginning of Us, use arrow keys to turn pages">
+      <!-- Sheet 1: cover / dedication -->
+      <div class="leaf">
+        <div class="face front"><div class="cover">
+          <svg class="emb"><use href="#rings"/></svg>
+          <div class="ct">The Beginning of Us</div><div class="cr"></div>
+          <div class="ca">Camille &amp; Noah</div><div class="cb" data-brand>Empeirya</div>
+        </div></div>
+        <div class="face back endpaper"><div class="pg">
+          <div class="dedic">For the two of us, five years from tonight. Don't skip the small parts — they were the whole point.<small>C &amp; N</small></div>
+        </div></div>
+      </div>
+      <!-- Sheet 2: title page / contents -->
+      <div class="leaf">
+        <div class="face front"><div class="pg titlepg">
+          <span class="tb" data-brand>Empeirya</span>
+          <h4>The Beginning of Us</h4>
+          <span class="sub">One first date, written down the same week, to be read again in five years</span>
+          <span style="font-size:1.25em">Camille &amp; Noah</span>
+          <span class="num">i</span>
+        </div></div>
+        <div class="face back"><div class="pg">
+          <span class="runhead">Contents</span>
+          <ul class="toc">
+            <li><b>1</b><div>The train there<i>Two tickets, one nervous playlist</i></div><span>1</span></li>
+            <li><b>2</b><div>The table by the window<i>Three hours like twenty minutes</i></div><span>5</span></li>
+            <li><b>3</b><div>What we talked about<i>Everything except the weather</i></div><span>11</span></li>
+            <li><b>4</b><div>The walk back<i>The long way, on purpose</i></div><span>19</span></li>
+            <li><b>5</b><div>Five years later<i>The page we promised not to read early</i></div><span>27</span></li>
+          </ul>
+          <span class="num">ii</span>
+        </div></div>
+      </div>
+      <!-- Sheet 3: chapter opener / the entry -->
+      <div class="leaf">
+        <div class="face front"><div class="pg chap">
+          <span class="roman">2</span><h4>The table by the window</h4>
+          <blockquote>"Three hours felt like twenty minutes. I remember thinking: pay attention — you will want this later."</blockquote>
+          <span class="meta">Written that night · photos from both phones</span>
+          <span class="num">5</span>
+        </div></div>
+        <div class="face back"><div class="pg">
+          <span class="runhead">2 · The table by the window</span>
+          <h4>Everything except the weather</h4>
+          <dl>
+            <div><dt>What happened</dt><dd>Dinner at the little place by the harbour, the one with six tables. We ordered wrong and shared both plates anyway.</dd></div>
+            <div><dt>What we talked about</dt><dd>Books we had pretended to read. Cities we would live in. What family means. Nobody checked a phone.</dd></div>
+            <div><dt>What I noticed</dt><dd>She argues with her hands. He listens with his whole face. I wrote it down in the taxi so I would never lose it.</dd></div>
+          </dl>
+          <span class="num">6</span>
+        </div></div>
+      </div>
+      <!-- Sheet 4: a scanned handwritten page / a blank write-in page -->
+      <div class="leaf">
+        <div class="face front"><div class="pg handpg">
+          <span class="runhead">4 · The walk back</span>
+          <p class="hn">We walked the long way back, along the harbour. I didn't want the night to end, so I pretended I'd forgotten where the station was. You laughed. You knew. Write this down, I thought. I was already sure.</p>
+          <span class="scantag">Handwritten by Noah · scanned from his notebook</span>
+          <span class="num">19</span>
+        </div></div>
+        <div class="face back"><div class="pg handpg">
+          <span class="runhead">Write here</span>
+          <div class="hn empty" aria-hidden="true"></div>
+          <p class="hand-hint">Left open for your own pen.</p>
+          <span class="num">20</span>
+        </div></div>
+      </div>
+      <!-- Sheet 5: five years later / back cover -->
+      <div class="leaf">
+        <div class="face front"><div class="pg">
+          <span class="runhead">Five years later</span>
+          <h4>Read again, together</h4>
+          <figure class="photo sm r">
+            <svg viewBox="0 0 200 140" role="img" aria-label="Illustration: a small table by a window at night, with a candle and two glasses">
+              <rect width="200" height="140" fill="#F2E8DC"/>
+              <rect x="116" y="10" width="72" height="64" rx="3" fill="#2E3A55"/>
+              <line x1="152" y1="10" x2="152" y2="74" stroke="#F2E8DC" stroke-width="4"/>
+              <line x1="116" y1="42" x2="188" y2="42" stroke="#F2E8DC" stroke-width="4"/>
+              <circle cx="170" cy="26" r="7" fill="#F4E9C8"/>
+              <circle cx="128" cy="58" r="1.2" fill="#F4E9C8"/><circle cx="140" cy="22" r="1" fill="#F4E9C8"/>
+              <path d="M18 98H142L132 140H28Z" fill="#FFFFFF"/>
+              <rect x="72" y="70" width="6" height="28" rx="2" fill="#E9E2D2"/>
+              <path d="M75 57c-4 6-3 10 0 11 3-1 4-5 0-11z" fill="#F2B544"/>
+              <path d="M36 66h20l-10 15z" fill="#D9A0A8"/>
+              <rect x="44.7" y="80" width="2.6" height="14" fill="#C9B48E"/>
+              <rect x="38" y="94" width="16" height="3" rx="1.5" fill="#C9B48E"/>
+              <path d="M100 66h20l-10 15z" fill="#D9A0A8"/>
+              <rect x="108.7" y="80" width="2.6" height="14" fill="#C9B48E"/>
+              <rect x="102" y="94" width="16" height="3" rx="1.5" fill="#C9B48E"/>
+            </svg>
+            <figcaption>Table five, the one by the window</figcaption>
+          </figure>
+          <p class="hl">The feeling comes and goes. The attention is the thing you choose — that night we chose it for three hours straight.</p>
+          <div class="qr"><canvas class="qrc" data-seed="31" width="25" height="25"></canvas><p><b>Hear the voice note from the taxi home</b>Scan to play it, nerves and all.</p></div>
+          <span class="num">27</span>
+        </div></div>
+        <div class="face back backcover"><div>
+          <svg><use href="#rings"/></svg>
+          <span data-brand>Empeirya</span>
+          <small>Printed for Camille &amp; Noah</small>
+        </div></div>
+      </div>
+    </div>
+
+  </div>
+  <div class="wrap">
+    <div class="fb-controls">
+      <button type="button" id="prev" aria-label="Previous page">←</button>
+      <span class="fb-label" id="fbl" aria-live="polite">Cover</span>
+      <button type="button" id="next" aria-label="Next page">→</button>
+    </div>
+    <div class="specs">
+      <span><b>Hardcover</b>, cloth-bound</span><span><b>Up to 200</b> pages</span><span><b>Your photos</b> on any page</span><span><b>Voice QR</b> on every story</span>
+    </div>
+    <div class="specs">
+      <span>Read as PDF: <a href="pdf/what-engineering-taught-me.pdf"><b>What Engineering Taught Me</b></a></span>
+      <span><a href="pdf/the-year-you-taught-us.pdf"><b>The Year You Taught Us</b></a></span>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===== HOW IT WORKS: three steps + a live chat with the AI companion ===== -->
+<section class="how" id="how">
+  <div class="wrap">
+    <div>
+      <div class="sec-head" style="margin-bottom:0">
+        <span class="eyebrow">02 · How it works</span>
+        <h2>Live it. Say it. The book writes itself.</h2>
+      </div>
+      <ol class="steps">
+        <li><span class="n">1</span><h3>Capture it any way</h3><p>Talk, type, chat, film, photograph, or write by hand and scan the page — in the moment or years later. Any life, any age: a school term, a first job, a wedding year, a recovery.</p></li>
+        <li><span class="n">2</span><h3>It asks like a biographer</h3><p>The AI is trained on the oldest shape of a good story — a person, a challenge, what it felt like, what it taught — and draws the feeling out without ever naming it. No judgement, no bias: your answer is always the final answer.</p></li>
+        <li><span class="n">3</span><h3>It drafts five ways, you choose</h3><p>Your own words come back laid out in five creative structures, readable as PDFs. Add your thoughts, reshape it, go again — it reiterates until you say it's final. A student's book reads like a student's; a kid's looks like a kid's.</p></li>
+      </ol>
+    </div>
+    <!-- A scripted conversation, played on a loop by section 4 of js/main.js -->
+    <div class="ticker chatcard">
+      <div class="top"><span class="wk">Friday · <span>4:40 pm</span></span><span class="eyebrow" data-brand>Empeirya</span></div>
+      <div class="chat" id="chat" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===== FROM LIFE TO BOOK: one book, end to end =====
+     Left: six steps (click one, or they advance by themselves).
+     Right: a phone whose screen changes with the step.
+     Driven by section 5 of js/main.js. -->
+<section class="journey" id="journey">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">03 · From life to book</span>
+      <h2>Watch one book being born.</h2>
+      <p class="lede">The same book you can open above — "The Year You Taught Us" — from the first tap to the parcel at the door. Click a step, or just watch.</p>
+    </div>
+    <div class="jgrid">
+      <ol class="jsteps" id="jsteps">
+        <li data-s="0" aria-current="step"><b>1</b><h3>Begin a book</h3><p>A title, a name, what it's about — that's all it needs. Any life, any age, no categories to fit into.</p></li>
+        <li data-s="1"><b>2</b><h3>Capture in the moment</h3><p>Talk to it at 3 a.m. Add photos and video, or scan a page you wrote by hand. Nothing to format.</p></li>
+        <li data-s="2"><b>3</b><h3>It asks what matters</h3><p>The AI notices what keeps coming up and asks the question a biographer would.</p></li>
+        <li data-s="3"><b>4</b><h3>It writes the page</h3><p>Your rambling words come back as clean, warm prose — your phrases kept, the lesson highlighted.</p></li>
+        <li data-s="4"><b>5</b><h3>You approve</h3><p>Read it, tweak a word, choose between the structures it drafted from your story. Nothing is printed that you didn't approve.</p></li>
+        <li data-s="5"><b>6</b><h3>Printed, shipped, alive</h3><p>When the season ends, the hardcover arrives. Videos live on as QR codes beside the story they belong to.</p></li>
+      </ol>
+
+      <div class="phone" aria-hidden="true"><div class="screen">
+        <!-- Step 1: begin a book -->
+        <div class="jscreen on" data-s="0">
+          <div class="apptop"><span data-brand>Empeirya</span><span>New book</span></div>
+          <div class="bub">Any life, any age. Tell me about your book.</div>
+          <div class="field"><small>Title</small>The Year You Taught Us</div>
+          <div class="field"><small>By</small>Ananya &amp; Rohan</div>
+          <div class="field"><small>It's about</small>Our first year as parents, for Kiara</div>
+          <div class="abtn yes">Begin</div>
+        </div>
+        <!-- Step 2: capture -->
+        <div class="jscreen" data-s="1">
+          <div class="apptop"><span data-brand>Empeirya</span><span>3:12 am</span></div>
+          <h4>I'm listening.</h4>
+          <div class="mic">●</div>
+          <p class="rec">Recording · 1:42</p>
+          <div class="chips" style="justify-content:center"><span class="chip">+ Photo</span><span class="chip">+ Video</span><span class="chip">+ Note</span><span class="chip">+ Scan</span></div>
+          <p class="hint">"She finally slept. I cried in the bathroom again, then went back in…"</p>
+        </div>
+        <!-- Step 3: it asks -->
+        <div class="jscreen" data-s="2">
+          <div class="apptop"><span data-brand>Empeirya</span><span>Chat</span></div>
+          <div class="bub">You've mentioned the 2 a.m. feed three times this week. What's the hardest part of it?</div>
+          <div class="bub me">Doing it alone, I think.</div>
+          <div class="bub">What changed the week Rohan took it over?</div>
+          <div class="bub me">Everything, honestly.</div>
+          <div class="bub">That sounds like a lesson for the book. Want me to write it up?</div>
+        </div>
+        <!-- Step 4: it writes -->
+        <div class="jscreen" data-s="3">
+          <div class="apptop"><span data-brand>Empeirya</span><span>Drafting</span></div>
+          <div class="raw">"umm we slept like 2 hours at a time for weeks?? i was crying in the bathroom lol then rohan started doing the 2am one and it got better"</div>
+          <div class="jarrow">↓ written by <span data-brand>Empeirya</span></div>
+          <div class="minipage">For eleven weeks we slept in two-hour pieces. I cried in the bathroom more than once, then went back in.<b>Ask for help before you're desperate. The week Rohan took the 2 a.m. feed, everything changed.</b></div>
+        </div>
+        <!-- Step 5: approve -->
+        <div class="jscreen" data-s="4">
+          <div class="apptop"><span data-brand>Empeirya</span><span>Page 9 of 44</span></div>
+          <div class="minipage"><i>The nights</i>For eleven weeks we slept in two-hour pieces. I cried in the bathroom more than once, then went back in.<b>Ask for help before you're desperate.</b></div>
+          <p class="rec">5 structures drafted from your story</p>
+          <div class="chips"><span class="chip on">Classic</span><span class="chip">Album</span><span class="chip">Letters</span><span class="chip">+2</span></div>
+          <div class="approve"><div class="abtn">✎ Edit</div><div class="abtn yes">✓ Approve</div></div>
+        </div>
+        <!-- Step 6: printed and shipped -->
+        <div class="jscreen" data-s="5">
+          <div class="apptop"><span data-brand>Empeirya</span><span>Month 12</span></div>
+          <h4>Your book is on its way.</h4>
+          <div class="shipcover" style="--cloth:#5B7186;--foil:#F1E3C6"><div class="cover"><svg class="emb"><use href="#heart"/></svg><div class="ct">The Year You Taught Us</div><div class="cr"></div><div class="ca">Ananya &amp; Rohan</div><div class="cb" data-brand>Empeirya</div></div></div>
+          <p class="rec">Hardcover · 44 pages · 3 copies</p>
+          <p class="hint">6 videos became QR codes — scan a page, watch the moment.</p>
+        </div>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===== IN YOUR OWN HAND: handwriting kept and typed up side by side =====
+     The toggle swaps the same page between handwriting and the typed
+     version (section 6 of js/main.js). -->
+<section class="hand" id="handwritten">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">04 · In your own hand</span>
+      <h2>Some things should stay in your handwriting.</h2>
+      <p class="lede">Write by pen whenever you like, in any language — Hindi, Kannada, Sanskrit, English, or a child's first letters. The handwriting is kept exactly as it is, and <span data-brand>Empeirya</span> types it up beside it, so it can be read, searched and reprinted.</p>
+    </div>
+    <div class="hdemo" id="hdemo" data-mode="hand">
+      <!-- Five example pages, in four scripts. Pick one, then flip it
+           between the handwriting and the typed-up version. -->
+      <div class="hpick" role="tablist" aria-label="Choose an example" id="hpick">
+        <button type="button" role="tab" aria-selected="true" data-h="0">English · Amma</button>
+        <button type="button" role="tab" aria-selected="false" data-h="1"><span lang="hi">हिन्दी</span> · Dadi</button>
+        <button type="button" role="tab" aria-selected="false" data-h="2"><span lang="kn">ಕನ್ನಡ</span> · Ananya, 9</button>
+        <button type="button" role="tab" aria-selected="false" data-h="3"><span lang="sa">संस्कृतम्</span> · Ajja</button>
+        <button type="button" role="tab" aria-selected="false" data-h="4">A child's hand · Arjun, 7</button>
+      </div>
+      <div class="hseg" role="group" aria-label="Show the page as">
+        <button type="button" data-m="hand" aria-pressed="true">Their handwriting</button>
+        <button type="button" data-m="typed" aria-pressed="false">Typed up</button>
+      </div>
+      <!-- To use a real scan instead of the font: add
+             <img class="hscan" src="img/handwriting/hindi.jpg" alt="">
+           as the first child of that page's .hbody. The handwriting font
+           hides itself; the typed-up side still shows on toggle. -->
+      <div class="hpages">
+        <!-- 0 · English: a mother's note -->
+        <div class="hpage on" data-h="0">
+          <span class="runhead">Page 14 · Amma's notebook</span>
+          <div class="hbody">
+            <div class="hink">Beta, the year we reached Pune we had one steel plate and a great deal of hope. Never be afraid of starting small. I began with nothing, and it was enough. — Amma</div>
+            <div class="htyped">Beta, the year we reached Pune we had one steel plate and a great deal of hope. Never be afraid of starting small. I began with nothing, and it was enough. <i>— Amma</i></div>
+          </div>
+          <div class="hfoot"><span class="t-hand">Meera Iyer · scanned with the app</span><span class="t-typed">Typed by <span data-brand>Empeirya</span> · handwriting kept as a facsimile</span></div>
+        </div>
+        <!-- 1 · Hindi: a grandmother's first salary -->
+        <div class="hpage" data-h="1">
+          <span class="runhead">Page 3 · Dadi's diary</span>
+          <div class="hbody" lang="hi">
+            <div class="hink deva">मुन्ना, १९७८ में जब मैंने पहली बार स्कूल में पढ़ाना शुरू किया, तो मेरी तनख़्वाह दो सौ रुपये थी। घर में सब हँसे। पर उसी दो सौ से तेरे पापा की पहली किताबें आईं। जो काम छोटा लगे, उसे पूरे मन से करना। — दादी</div>
+            <div class="htyped deva">मुन्ना, १९७८ में जब मैंने पहली बार स्कूल में पढ़ाना शुरू किया, तो मेरी तनख़्वाह दो सौ रुपये थी। घर में सब हँसे। पर उसी दो सौ से तेरे पापा की पहली किताबें आईं। जो काम छोटा लगे, उसे पूरे मन से करना। <i>— दादी</i></div>
+          </div>
+          <div class="hfoot"><span class="t-hand">Shanti Devi · scanned with the app</span><span class="t-typed">Typed by <span data-brand>Empeirya</span> · Hindi, handwriting kept as a facsimile</span></div>
+        </div>
+        <!-- 2 · Kannada: a nine-year-old after her first fall off a bicycle -->
+        <div class="hpage" data-h="2">
+          <span class="runhead">Page 1 · Ananya's notebook, age 9</span>
+          <div class="hbody" lang="kn">
+            <div class="hink knda kid">ಅಪ್ಪಾ, ಇವತ್ತು ನಾನು ಸೈಕಲ್‌ನಿಂದ ಬಿದ್ದೆ. ಆದರೆ ಮತ್ತೆ ಹತ್ತಿದೆ. ನೀವು ಹೇಳಿದ ಹಾಗೆ, ಬೀಳುವುದೂ ಕಲಿಯುವುದರ ಭಾಗ. — ಅನನ್ಯಾ, ೯ ವರ್ಷ</div>
+            <div class="htyped knda">ಅಪ್ಪಾ, ಇವತ್ತು ನಾನು ಸೈಕಲ್‌ನಿಂದ ಬಿದ್ದೆ. ಆದರೆ ಮತ್ತೆ ಹತ್ತಿದೆ. ನೀವು ಹೇಳಿದ ಹಾಗೆ, ಬೀಳುವುದೂ ಕಲಿಯುವುದರ ಭಾಗ. <i>— ಅನನ್ಯಾ, ೯ ವರ್ಷ</i></div>
+          </div>
+          <div class="hfoot"><span class="t-hand">Ananya, 9 · photographed by Appa</span><span class="t-typed">Typed by <span data-brand>Empeirya</span> · Kannada, her handwriting kept beside it</span></div>
+        </div>
+        <!-- 3 · Sanskrit: a grandfather passes on a verse -->
+        <div class="hpage" data-h="3">
+          <span class="runhead">Page 12 · Ajja's letter, on the day of the thread ceremony</span>
+          <div class="hbody" lang="sa">
+            <div class="hink deva">विद्या ददाति विनयं विनयाद् याति पात्रताम्। पात्रत्वाद् धनमाप्नोति धनाद् धर्मं ततः सुखम्॥ एनं श्लोकं मम पिता मह्यम् अददात्। अद्य अहं तुभ्यं ददामि। — अज्जः</div>
+            <div class="htyped deva">विद्या ददाति विनयं विनयाद् याति पात्रताम्। पात्रत्वाद् धनमाप्नोति धनाद् धर्मं ततः सुखम्॥ एनं श्लोकं मम पिता मह्यम् अददात्। अद्य अहं तुभ्यं ददामि। <i>— अज्जः</i></div>
+          </div>
+          <div class="hfoot"><span class="t-hand">Raghavendra Rao · scanned with the app</span><span class="t-typed">Typed by <span data-brand>Empeirya</span> · Sanskrit, handwriting kept as a facsimile</span></div>
+        </div>
+        <!-- 4 · English, a child's hand: a first letter -->
+        <div class="hpage" data-h="4">
+          <span class="runhead">Page 1 · Arjun's first letter, age 7</span>
+          <div class="hbody">
+            <div class="hink kid">Dear Mum, today I lost my first tooth at school. Miss Rao gave me a sticker. I was brave and I only cried a little bit. Love, Arjun</div>
+            <div class="htyped">Dear Mum, today I lost my first tooth at school. Miss Rao gave me a sticker. I was brave and I only cried a little bit. <i>Love, Arjun</i></div>
+          </div>
+          <div class="hfoot"><span class="t-hand">Arjun, 7 · photographed by Mum</span><span class="t-typed">Typed by <span data-brand>Empeirya</span> · spelling kept as he wrote it</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="hgrid">
+      <div class="hcard"><span class="tagl">In every book</span><h3>Write-in pages</h3><p>Any book can carry pages left open, ruled or plain, for a note in your own hand. Add as many as you like.</p></div>
+      <div class="hcard"><span class="tagl">From ₹1,999</span><h3>The Handwritten Edition</h3><p>A hardcover with your personalised prompts printed on every page and room to answer by pen. Fill it in, scan it, and we do the rest.</p></div>
+      <div class="hcard"><span class="tagl">Included</span><h3>Scan any page</h3><p>Photograph a handwritten page in the app. The handwriting stays as it is, with a typed transcript beside it, in your language.</p></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===== WHY IT'S DIFFERENT: three cloth covers that open like books.
+     Hover opens a cover; clicking toggles it (section 6 of js/main.js). ===== -->
+<section class="whysec">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">05 · Why it's different</span>
+      <h2>Most memoir books keep stories. This one keeps what the story taught.</h2>
+      <p class="lede">Three promises, bound in cloth. Open each one.</p>
+    </div>
+    <div class="why">
+      <button class="wcard" type="button" style="--cloth:#4E5A32;--foil:#D9B56A">
+        <span class="wback"><b>Lessons, not only memories</b><p>Every entry ends with what you learned, what you'd change, and what you'd tell someone else. It reads like advice from someone who cares.</p></span>
+        <span class="wfront"><svg><use href="#olive"/></svg><b>Lessons, not only memories</b><i>Open the cover →</i></span>
+      </button>
+      <button class="wcard" type="button" style="--cloth:#1F3B5C;--foil:#F1E3C6">
+        <span class="wback"><b>It listens, then writes</b><p>Rambling 3 a.m. voice notes come back as clear, warm prose — grammar fixed, timeline ordered, your own phrases kept. Your answer is always the final answer.</p></span>
+        <span class="wfront"><svg><use href="#heart"/></svg><b>It listens, then writes</b><i>Open the cover →</i></span>
+      </button>
+      <button class="wcard" type="button" style="--cloth:#6B2328;--foil:#E3C27E">
+        <span class="wback"><b>Yours, private by choice</b><p>Nothing is shared unless you decide. Any entry can stay only yours, go to family, join the book, or be published — your call, every single time.</p></span>
+        <span class="wfront"><svg><use href="#star"/></svg><b>Yours, private by choice</b><i>Open the cover →</i></span>
+      </button>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===== PRICING: one subscription for the app, printing per book ===== -->
+<section id="pricing">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">06 · Pricing</span>
+      <h2>One plan. Two ways to pay.</h2>
+      <p class="lede">The same plan either way — talk, film, chat and write as much as you like. Pay for the year with the hardcover included, or month by month.</p>
+    </div>
+    <div class="pay">
+      <div class="payplans">
+        <div class="plan feat">
+          <span class="badge">Best as a gift · one tap</span>
+          <div class="pname">One Book</div>
+          <div class="pnat">A year of <span data-brand>Empeirya</span> and the hardcover, together</div>
+          <div class="price">₹4,999<small> / year · about $60</small></div>
+          <ul>
+            <li>Everything in the monthly plan, for 12 months</li>
+            <li>The cloth-bound hardcover included</li>
+            <li>Your videos on its pages, as QR codes</li>
+            <li>Gift it: you pay once, they live the year</li>
+          </ul>
+          <a class="btn" href="#join">Start a book</a>
+        </div>
+        <div class="plan">
+          <div class="pname">Monthly</div>
+          <div class="pnat">The app and the AI, no commitment</div>
+          <div class="price">₹699<small> / month · about $9</small></div>
+          <ul>
+            <li>Unlimited voice, video, chat and photos</li>
+            <li>It asks, writes and designs — your answer is always final</li>
+            <li>Five draft structures, reshaped until you say final</li>
+            <li>Private vault, family sharing, export any time</li>
+          </ul>
+          <a class="btn ghost" href="#join">Start free</a>
+        </div>
+      </div>
+      <ol class="paysteps">
+        <li><b>1</b><div><h3>Start free for 30 days</h3><p>Record from day one. Everything you capture stays yours, even if you stop.</p></div></li>
+        <li><b>2</b><div><h3>Pay one of two ways</h3><p>One Book, ₹4,999 for the year with the hardcover included — or ₹699 a month. UPI, Apple Pay or card, saved once.</p></div></li>
+        <li><b>3</b><div><h3>Printing</h3><p>Included in One Book. On monthly, you pay for a hardcover only when you decide to hold one — from ₹2,999, videos as QR codes on its pages. Extra copies ₹1,299 either way.</p></div></li>
+        <li><b>4</b><div><h3>Write by hand, too</h3><p>Any book can carry write-in pages. Prefer pen from the start? The Handwritten Edition is a hardcover with your personalised prompts on every page, from ₹1,999. Scan it with the app and the AI types it up beside your handwriting.</p></div></li>
+        <li><b>5</b><div><h3>Extra hands, if you want them</h3><p>Add Guided: our editors and designers work the book with you, as a separate add-on subscription.</p></div></li>
+      </ol>
+    </div>
+    <p class="note">Prices are working figures for this prototype.</p>
+  </div>
+</section>
+
+
+<!-- ===== JOIN: early-access form (section 7 of js/main.js) ===== -->
+<section class="join" id="join">
+  <div class="wrap">
+    <div style="display:grid;gap:18px">
+      <h2>Be one of the first twenty.</h2>
+      <p class="lede">We're opening <span data-brand>Empeirya</span> to twenty founding families first — a paid pilot at founding prices: ten Handwritten Editions gifted to parents, ten books written with the companion. Your book, printed, in about ten weeks.</p>
+    </div>
+    <form id="form" novalidate>
+      <label for="f-name">Your name<input id="f-name" name="name" autocomplete="name"></label>
+      <label for="f-contact">Email or phone<input id="f-contact" name="contact"></label>
+      <label for="f-for">The book is about
+        <select id="f-for" name="for"><option>My own life lessons</option><option>My parent's life (a gift)</option><option>My first year as a parent</option><option>My college years</option><option>My startup years</option><option>Moving to a new country</option></select>
+      </label>
+      <button class="btn" type="submit">Apply for the pilot</button>
+      <p class="thanks" id="thanks" hidden></p>
+      <p class="fine">Prototype: this form doesn't send or store anything yet.</p>
+    </form>
+  </div>
+</section>
+
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="wrap">
+    <span><span data-brand>Empeirya</span> · empeirya.com · made in India</span>
+    <span>Your experiences belong to you.</span>
+  </div>
+</footer>
+
+<!-- Scripts go last so the page content exists before they run. -->
+<script src="js/qr.js?v=1794660947"></script>
+<script src="js/main.js?v=1794660947"></script>
+</body>
+</html>
