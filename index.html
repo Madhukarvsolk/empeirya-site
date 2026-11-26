@@ -1,0 +1,485 @@
+<!doctype html>
+<!--
+  =====================================================================
+  EMPEIRYA — prototype website
+  ---------------------------------------------------------------------
+  An AI companion that captures someone's life as it happens — voice,
+  photos, video — asks the right questions back, and turns a season of
+  it into a hardcover book. Built around "lessons, not only memories".
+
+  How to run: just double-click this file. No server or install needed.
+  (Fonts load from Google Fonts when online; without internet the page
+  falls back to system fonts and still works.)
+
+  Files:
+    css/styles.css      look of the website
+    css/book-pages.css  look of the pages inside the books (shared with /books)
+    js/main.js          everything interactive
+    js/qr.js            draws the decorative QR codes
+    books/*.html        print versions of the two sample books
+    pdf/*.pdf           the first two books as PDFs
+
+  Page order: prototype bar → nav → hero → quote → look inside (five
+              sample books) → how it works (the AI companion) → from
+              life to book (step-by-step) → in your own hand
+              (handwriting) → why (openable covers) → pricing → join
+              → footer
+  =====================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Empeirya</title>
+  <meta name="description" content="Empeirya is an AI companion that turns the moments you record — voice, photos, video — into a hardcover book of what you lived through and what it taught you.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=GFS+Didot&family=Commissioner:wght@300;400;500;600&family=Fredoka:wght@400;500;600;700&family=Comic+Neue:wght@700&family=Bangers&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Caveat:wght@500;700&family=Kalam:wght@300;400&family=Akaya+Kanadaka&family=Gloria+Hallelujah&family=Tiro+Devanagari+Hindi&family=Tiro+Devanagari+Sanskrit&family=Tiro+Kannada&display=swap">
+  <link rel="stylesheet" href="css/book-pages.css?v=1795689040">
+  <link rel="stylesheet" href="css/book-engine.css?v=1795689040">
+  <link rel="stylesheet" href="css/styles.css?v=1795689040">
+</head>
+<body>
+
+<!-- Reusable drawings. Defined once here, then used anywhere with
+     <svg><use href="#olive"/></svg>. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <!-- Olive branch: the brand emblem (Greek symbol of wisdom and peace) -->
+  <symbol id="olive" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M32 58C32 40 30 22 22 6"/><path d="M32 58C32 40 34 22 42 6"/></g><g fill="currentColor"><ellipse cx="24" cy="16" rx="5.5" ry="2.2" transform="rotate(-35 24 16)"/><ellipse cx="18" cy="24" rx="5.5" ry="2.2" transform="rotate(20 18 24)"/><ellipse cx="27" cy="30" rx="5.5" ry="2.2" transform="rotate(-40 27 30)"/><ellipse cx="22" cy="40" rx="5.5" ry="2.2" transform="rotate(25 22 40)"/><ellipse cx="40" cy="16" rx="5.5" ry="2.2" transform="rotate(35 40 16)"/><ellipse cx="46" cy="24" rx="5.5" ry="2.2" transform="rotate(-20 46 24)"/><ellipse cx="37" cy="30" rx="5.5" ry="2.2" transform="rotate(40 37 30)"/><ellipse cx="42" cy="40" rx="5.5" ry="2.2" transform="rotate(-25 42 40)"/><circle cx="29" cy="47" r="2.2"/><circle cx="36" cy="49" r="2.2"/></g></symbol>
+  <!-- Heart: emblem for the baby book -->
+  <symbol id="heart" viewBox="0 0 64 64"><path fill="currentColor" d="M32 54C18 44 8 35 8 23a12 12 0 0 1 24-4 12 12 0 0 1 24 4c0 12-10 21-24 31z"/></symbol>
+  <!-- Small footprint for the "first steps" picture -->
+  <symbol id="foot" viewBox="-12 -24 24 40"><g fill="#8C6F56"><ellipse cx="0" cy="2" rx="7" ry="12"/><circle cx="-5.5" cy="-14" r="2.6"/><circle cx="-1.5" cy="-16.5" r="2.4"/><circle cx="2.5" cy="-16" r="2.2"/><circle cx="5.5" cy="-13.5" r="2"/><circle cx="7.2" cy="-10.3" r="1.7"/></g></symbol>
+  <!-- North star: emblem for the founder book -->
+  <symbol id="star" viewBox="0 0 64 64"><path fill="currentColor" d="M32 4c2 14 6 22 12 28-6 6-10 14-12 28-2-14-6-22-12-28 6-6 10-14 12-28z"/><path fill="currentColor" opacity=".65" d="M51 8c.8 5 2.4 8.2 5 10.5-2.6 2.3-4.2 5.5-5 10.5-.8-5-2.4-8.2-5-10.5 2.6-2.3 4.2-5.5 5-10.5zM13 38c.8 5 2.4 8.2 5 10.5-2.6 2.3-4.2 5.5-5 10.5-.8-5-2.4-8.2-5-10.5 2.6-2.3 4.2-5.5 5-10.5z"/></symbol>
+  <!-- Compass: emblem for the "new country" book -->
+  <symbol id="compass" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="32" cy="32" r="23"/><path d="M32 3v6M32 55v6M3 32h6M55 32h6" stroke-linecap="round"/></g><path fill="currentColor" d="M32 15 38 32 32 49 26 32Z"/><circle cx="32" cy="32" r="3.2" fill="currentColor"/></symbol>
+  <!-- Interlocked rings: emblem for the first-date book -->
+  <symbol id="rings" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.6"><circle cx="24.5" cy="32" r="14"/><circle cx="39.5" cy="32" r="14"/></g></symbol>
+</svg>
+
+
+<!-- ===== PROTOTYPE BAR: name switcher. Delete this block when going live. ===== -->
+<div class="proto" role="region" aria-label="Prototype controls">
+  <div class="wrap">
+    <b>Prototype</b><span>Try a name:</span>
+    <div class="names" id="names">
+      <button type="button" data-n="empeirya" aria-pressed="true">Empeirya</button>
+      <button type="button" data-n="empeiria" aria-pressed="false">Empeiria</button>
+      <button type="button" data-n="anubhav" aria-pressed="false">Anubhav</button>
+      <button type="button" data-n="phronesis" aria-pressed="false">Phronesis</button>
+      <button type="button" data-n="hindsight" aria-pressed="false">Hindsight</button>
+    </div>
+    <span class="meaning" id="meaning"></span>
+  </div>
+</div>
+
+
+<!-- ===== NAVIGATION ===== -->
+<nav>
+  <div class="wrap">
+    <a class="mark" href="#top"><svg><use href="#olive"/></svg><span data-brand>Empeirya</span></a>
+    <div class="navlinks">
+      <a href="#inside">The books</a><a href="#how">How it works</a><a href="#journey">From life to book</a><a href="#handwritten">Handwriting</a><a href="#pricing">Pricing</a>
+    </div>
+    <a class="btn sm" href="#join">Join early</a>
+  </div>
+</nav>
+
+
+<!-- ===== HERO: headline + interactive 3D book with cover designer ===== -->
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="hero-copy">
+      <div class="gloss"><span class="gk" data-native>ἐμπειρία</span><span id="gloss"></span></div>
+      <h1>Everything you learned, <em>in one book</em> worth passing on.</h1>
+      <p class="lede"><span data-brand>Empeirya</span> listens as you live — voice, video, photos, chat. It asks like a biographer and writes like one too. When the chapter ends, a hardcover arrives at your door.</p>
+      <div class="ctas">
+        <a class="btn" href="#journey">Watch a book being born</a>
+        <a class="btn ghost" href="#inside">Look inside the books</a>
+      </div>
+    </div>
+
+    <div class="hero-art">
+      <!-- The 3D book: five faces arranged in 3D by CSS (see .book3d in styles.css). -->
+      <div class="scene" id="scene">
+        <div class="bob">
+          <div class="book3d enter" id="book3d">
+            <div class="b-back"></div>
+            <div class="b-pages"></div>
+            <div class="b-top"></div>
+            <div class="b-spine"><span data-title>What Engineering Taught Me</span></div>
+            <div class="b-front"><div class="cover">
+              <svg class="emb"><use href="#olive"/></svg>
+              <div class="ct" data-title>What Engineering Taught Me</div><div class="cr"></div>
+              <div class="ca" data-author>Madhukar V</div>
+              <div class="cb" data-brand>Empeirya</div>
+            </div></div>
+          </div>
+        </div>
+      </div>
+      <div class="shadow" aria-hidden="true"></div>
+    </div>
+  </div>
+</header>
+
+
+<!-- ===== QUOTE BAND ===== -->
+<div class="quote">
+  <div class="wrap">
+    <span class="gk">πάθει μάθος</span>
+    <p>"Learning comes through suffering."<small>Aeschylus, Agamemnon, 458 BC. The oldest idea behind this book.</small></p>
+  </div>
+</div>
+
+
+<!-- ===== LOOK INSIDE: two sample flipbooks =====
+     Structure of a book:
+       <div class="fb">                 the open book (two pages wide)
+         <div class="leaf">             one sheet of paper
+           <div class="face front">     right-hand page
+           <div class="face back">      left-hand page after turning
+     The leaves are built by js/main.js from js/book-engine.js. -->
+<section class="inside" id="inside">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">01 · Look inside</span>
+      <h2>Five sample books. Pick one and turn the pages.</h2>
+      <p class="lede">Every book here was made the way yours will be: lived first, spoken aloud, written by <span data-brand>Empeirya</span>. Click a page or use the arrows.</p>
+    </div>
+    <div class="shelf" role="tablist" aria-label="Sample books" id="shelf">
+      <button type="button" role="tab" aria-selected="true" data-b="0"><i class="dot" style="--c:#4E5A32"></i><b>What Engineering Taught Me</b><span>Madhukar V · a blueprint, a comic, a pencil drawing</span></button>
+      <button type="button" role="tab" aria-selected="false" data-b="1"><i class="dot" style="--c:#1B2350"></i><b>The Year You Taught Us</b><span>Ananya &amp; Rohan · sound panel, flaps, a family tree</span></button>
+      <button type="button" role="tab" aria-selected="false" data-b="2"><i class="dot" style="--c:#2B2E33"></i><b>The Company We Built</b><span>Sofía Martínez · eleven nos, a timeline, a team tree</span></button>
+      <button type="button" role="tab" aria-selected="false" data-b="3"><i class="dot" style="--c:#2F4A5C"></i><b>Ten Thousand Miles From Home</b><span>Liam O'Connor · a route map, two clocks, watercolour</span></button>
+      <button type="button" role="tab" aria-selected="false" data-b="4"><i class="dot" style="--c:#6B2340"></i><b>The Beginning of Us</b><span>Camille &amp; Noah · a picture across both pages, a fold-out, two families</span></button>
+    </div>
+  </div>
+  <div class="stage" id="stage">
+
+    <!-- The five sample books. Their pages are made by js/book-engine.js (the
+         same engine as the app), so every feature reaches both at once. -->
+    <div class="fb closed" id="fb1" data-book="eng" tabindex="0" aria-label="What Engineering Taught Me, use arrow keys to turn pages"></div>
+    <div class="fb closed" id="fb2" data-book="kiara" tabindex="0" hidden aria-label="The Year You Taught Us, use arrow keys to turn pages"></div>
+    <div class="fb closed" id="fb3" data-book="company" tabindex="0" hidden aria-label="The Company We Built, use arrow keys to turn pages"></div>
+    <div class="fb closed" id="fb4" data-book="miles" tabindex="0" hidden aria-label="Ten Thousand Miles From Home, use arrow keys to turn pages"></div>
+    <div class="fb closed" id="fb5" data-book="us" tabindex="0" hidden aria-label="The Beginning of Us, use arrow keys to turn pages"></div>
+
+  </div>
+  <div class="wrap">
+    <div class="fb-controls">
+      <button type="button" id="prev" aria-label="Previous page">←</button>
+      <span class="fb-label" id="fbl" aria-live="polite">Cover</span>
+      <button type="button" id="next" aria-label="Next page">→</button>
+    </div>
+    <div class="specs">
+      <span><b>Hardcover</b>, cloth-bound</span><span><b>Up to 200</b> pages</span><span><b>Your photos</b> on any page</span><span><b>Voices</b> as QR, printed waves or a built-in panel</span>
+    </div>
+    <div class="specs">
+      <span>Every book here is made by the same engine as the app. <a href="app/"><b>Open them in the app prototype →</b></a></span>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===== HOW IT WORKS: three steps + a live chat with the AI companion ===== -->
+<section class="how" id="how">
+  <div class="wrap">
+    <div>
+      <div class="sec-head" style="margin-bottom:0">
+        <span class="eyebrow">02 · How it works</span>
+        <h2>Live it. Say it. The book writes itself.</h2>
+      </div>
+      <ol class="steps">
+        <li><span class="n">1</span><h3>Capture it any way</h3><p>Talk, type, chat, film, photograph, or write by hand and scan the page — in the moment or years later. Any life, any age: a school term, a first job, a wedding year, a recovery.</p></li>
+        <li><span class="n">2</span><h3>It asks like a biographer</h3><p>The AI is trained on the oldest shape of a good story — a person, a challenge, what it felt like, what it taught — and draws the feeling out without ever naming it. No judgement, no bias: your answer is always the final answer.</p></li>
+        <li><span class="n">3</span><h3>It drafts five ways, you choose</h3><p>Your own words come back laid out in five creative structures, readable as PDFs. Add your thoughts, reshape it, go again — it reiterates until you say it's final. A student's book reads like a student's; a kid's looks like a kid's.</p></li>
+      </ol>
+    </div>
+    <!-- A scripted conversation, played on a loop by section 4 of js/main.js -->
+    <div class="ticker chatcard">
+      <div class="top"><span class="wk">Friday · <span>4:40 pm</span></span><span class="eyebrow" data-brand>Empeirya</span></div>
+      <div class="chat" id="chat" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===== FROM LIFE TO BOOK: one book, end to end =====
+     Left: six steps (click one, or they advance by themselves).
+     Right: a phone whose screen changes with the step.
+     Driven by section 5 of js/main.js. -->
+<section class="journey" id="journey">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">03 · From life to book</span>
+      <h2>Watch one book being born.</h2>
+      <p class="lede">The same book you can open above — "The Year You Taught Us" — from the first tap to the parcel at the door. Click a step, or just watch.</p>
+    </div>
+    <div class="jgrid">
+      <ol class="jsteps" id="jsteps">
+        <li data-s="0" aria-current="step"><b>1</b><h3>Begin a book</h3><p>A title, a name, what it's about — that's all it needs. Any life, any age, no categories to fit into.</p></li>
+        <li data-s="1"><b>2</b><h3>Capture in the moment</h3><p>Talk to it at 3 a.m. Add photos and video, or scan a page you wrote by hand. Nothing to format.</p></li>
+        <li data-s="2"><b>3</b><h3>It asks what matters</h3><p>The AI notices what keeps coming up and asks the question a biographer would.</p></li>
+        <li data-s="3"><b>4</b><h3>It writes the page</h3><p>Your rambling words come back as clean, warm prose — your phrases kept, the lesson highlighted.</p></li>
+        <li data-s="4"><b>5</b><h3>You approve</h3><p>Read it, tweak a word, choose between the structures it drafted from your story. Nothing is printed that you didn't approve.</p></li>
+        <li data-s="5"><b>6</b><h3>Printed, shipped, alive</h3><p>When the season ends, the hardcover arrives. Videos live on as QR codes beside the story they belong to.</p></li>
+      </ol>
+
+      <div class="phone" aria-hidden="true"><div class="screen">
+        <!-- Step 1: begin a book -->
+        <div class="jscreen on" data-s="0">
+          <div class="apptop"><span data-brand>Empeirya</span><span>New book</span></div>
+          <div class="bub">Any life, any age. Tell me about your book.</div>
+          <div class="field"><small>Title</small>The Year You Taught Us</div>
+          <div class="field"><small>By</small>Ananya &amp; Rohan</div>
+          <div class="field"><small>It's about</small>Our first year as parents, for Kiara</div>
+          <div class="abtn yes">Begin</div>
+        </div>
+        <!-- Step 2: capture -->
+        <div class="jscreen" data-s="1">
+          <div class="apptop"><span data-brand>Empeirya</span><span>3:12 am</span></div>
+          <h4>I'm listening.</h4>
+          <div class="mic">●</div>
+          <p class="rec">Recording · 1:42</p>
+          <div class="chips" style="justify-content:center"><span class="chip">+ Photo</span><span class="chip">+ Video</span><span class="chip">+ Note</span><span class="chip">+ Scan</span></div>
+          <p class="hint">"She finally slept. I cried in the bathroom again, then went back in…"</p>
+        </div>
+        <!-- Step 3: it asks -->
+        <div class="jscreen" data-s="2">
+          <div class="apptop"><span data-brand>Empeirya</span><span>Chat</span></div>
+          <div class="bub">You've mentioned the 2 a.m. feed three times this week. What's the hardest part of it?</div>
+          <div class="bub me">Doing it alone, I think.</div>
+          <div class="bub">What changed the week Rohan took it over?</div>
+          <div class="bub me">Everything, honestly.</div>
+          <div class="bub">That sounds like a lesson for the book. Want me to write it up?</div>
+        </div>
+        <!-- Step 4: it writes -->
+        <div class="jscreen" data-s="3">
+          <div class="apptop"><span data-brand>Empeirya</span><span>Drafting</span></div>
+          <div class="raw">"umm we slept like 2 hours at a time for weeks?? i was crying in the bathroom lol then rohan started doing the 2am one and it got better"</div>
+          <div class="jarrow">↓ written by <span data-brand>Empeirya</span></div>
+          <div class="minipage">For eleven weeks we slept in two-hour pieces. I cried in the bathroom more than once, then went back in.<b>Ask for help before you're desperate. The week Rohan took the 2 a.m. feed, everything changed.</b></div>
+        </div>
+        <!-- Step 5: approve -->
+        <div class="jscreen" data-s="4">
+          <div class="apptop"><span data-brand>Empeirya</span><span>Page 9 of 44</span></div>
+          <div class="minipage"><i>The nights</i>For eleven weeks we slept in two-hour pieces. I cried in the bathroom more than once, then went back in.<b>Ask for help before you're desperate.</b></div>
+          <p class="rec">5 structures drafted from your story</p>
+          <div class="chips"><span class="chip on">Classic</span><span class="chip">Album</span><span class="chip">Letters</span><span class="chip">+2</span></div>
+          <div class="approve"><div class="abtn">✎ Edit</div><div class="abtn yes">✓ Approve</div></div>
+        </div>
+        <!-- Step 6: printed and shipped -->
+        <div class="jscreen" data-s="5">
+          <div class="apptop"><span data-brand>Empeirya</span><span>Month 12</span></div>
+          <h4>Your book is on its way.</h4>
+          <div class="shipcover" style="--cloth:#5B7186;--foil:#F1E3C6"><div class="cover"><svg class="emb"><use href="#heart"/></svg><div class="ct">The Year You Taught Us</div><div class="cr"></div><div class="ca">Ananya &amp; Rohan</div><div class="cb" data-brand>Empeirya</div></div></div>
+          <p class="rec">Hardcover · 44 pages · 3 copies</p>
+          <p class="hint">6 videos became QR codes — scan a page, watch the moment.</p>
+        </div>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===== IN YOUR OWN HAND: handwriting kept and typed up side by side =====
+     The toggle swaps the same page between handwriting and the typed
+     version (section 6 of js/main.js). -->
+<section class="hand" id="handwritten">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">04 · In your own hand</span>
+      <h2>Some things should stay in your handwriting.</h2>
+      <p class="lede">Write by pen whenever you like, in any language — Hindi, Kannada, Sanskrit, English, or a child's first letters. The handwriting is kept exactly as it is, and <span data-brand>Empeirya</span> types it up beside it, so it can be read, searched and reprinted.</p>
+    </div>
+    <div class="hdemo" id="hdemo" data-mode="hand">
+      <!-- Five example pages, in four scripts. Pick one, then flip it
+           between the handwriting and the typed-up version. -->
+      <div class="hpick" role="tablist" aria-label="Choose an example" id="hpick">
+        <button type="button" role="tab" aria-selected="true" data-h="0">English · Amma</button>
+        <button type="button" role="tab" aria-selected="false" data-h="1"><span lang="hi">हिन्दी</span> · Dadi</button>
+        <button type="button" role="tab" aria-selected="false" data-h="2"><span lang="kn">ಕನ್ನಡ</span> · Ananya, 9</button>
+        <button type="button" role="tab" aria-selected="false" data-h="3"><span lang="sa">संस्कृतम्</span> · Ajja</button>
+        <button type="button" role="tab" aria-selected="false" data-h="4">A child's hand · Arjun, 7</button>
+      </div>
+      <div class="hseg" role="group" aria-label="Show the page as">
+        <button type="button" data-m="hand" aria-pressed="true">Their handwriting</button>
+        <button type="button" data-m="typed" aria-pressed="false">Typed up</button>
+      </div>
+      <!-- To use a real scan instead of the font: add
+             <img class="hscan" src="img/handwriting/hindi.jpg" alt="">
+           as the first child of that page's .hbody. The handwriting font
+           hides itself; the typed-up side still shows on toggle. -->
+      <div class="hpages">
+        <!-- 0 · English: a mother's note -->
+        <div class="hpage on" data-h="0">
+          <span class="runhead">Page 14 · Amma's notebook</span>
+          <div class="hbody">
+            <div class="hink">Beta, the year we reached Pune we had one steel plate and a great deal of hope. Never be afraid of starting small. I began with nothing, and it was enough. — Amma</div>
+            <div class="htyped">Beta, the year we reached Pune we had one steel plate and a great deal of hope. Never be afraid of starting small. I began with nothing, and it was enough. <i>— Amma</i></div>
+          </div>
+          <div class="hfoot"><span class="t-hand">Meera Iyer · scanned with the app</span><span class="t-typed">Typed by <span data-brand>Empeirya</span> · handwriting kept as a facsimile</span></div>
+        </div>
+        <!-- 1 · Hindi: a grandmother's first salary -->
+        <div class="hpage" data-h="1">
+          <span class="runhead">Page 3 · Dadi's diary</span>
+          <div class="hbody" lang="hi">
+            <div class="hink deva">मुन्ना, १९७८ में जब मैंने पहली बार स्कूल में पढ़ाना शुरू किया, तो मेरी तनख़्वाह दो सौ रुपये थी। घर में सब हँसे। पर उसी दो सौ से तेरे पापा की पहली किताबें आईं। जो काम छोटा लगे, उसे पूरे मन से करना। — दादी</div>
+            <div class="htyped deva">मुन्ना, १९७८ में जब मैंने पहली बार स्कूल में पढ़ाना शुरू किया, तो मेरी तनख़्वाह दो सौ रुपये थी। घर में सब हँसे। पर उसी दो सौ से तेरे पापा की पहली किताबें आईं। जो काम छोटा लगे, उसे पूरे मन से करना। <i>— दादी</i></div>
+          </div>
+          <div class="hfoot"><span class="t-hand">Shanti Devi · scanned with the app</span><span class="t-typed">Typed by <span data-brand>Empeirya</span> · Hindi, handwriting kept as a facsimile</span></div>
+        </div>
+        <!-- 2 · Kannada: a nine-year-old after her first fall off a bicycle -->
+        <div class="hpage" data-h="2">
+          <span class="runhead">Page 1 · Ananya's notebook, age 9</span>
+          <div class="hbody" lang="kn">
+            <div class="hink knda kid">ಅಪ್ಪಾ, ಇವತ್ತು ನಾನು ಸೈಕಲ್‌ನಿಂದ ಬಿದ್ದೆ. ಆದರೆ ಮತ್ತೆ ಹತ್ತಿದೆ. ನೀವು ಹೇಳಿದ ಹಾಗೆ, ಬೀಳುವುದೂ ಕಲಿಯುವುದರ ಭಾಗ. — ಅನನ್ಯಾ, ೯ ವರ್ಷ</div>
+            <div class="htyped knda">ಅಪ್ಪಾ, ಇವತ್ತು ನಾನು ಸೈಕಲ್‌ನಿಂದ ಬಿದ್ದೆ. ಆದರೆ ಮತ್ತೆ ಹತ್ತಿದೆ. ನೀವು ಹೇಳಿದ ಹಾಗೆ, ಬೀಳುವುದೂ ಕಲಿಯುವುದರ ಭಾಗ. <i>— ಅನನ್ಯಾ, ೯ ವರ್ಷ</i></div>
+          </div>
+          <div class="hfoot"><span class="t-hand">Ananya, 9 · photographed by Appa</span><span class="t-typed">Typed by <span data-brand>Empeirya</span> · Kannada, her handwriting kept beside it</span></div>
+        </div>
+        <!-- 3 · Sanskrit: a grandfather passes on a verse -->
+        <div class="hpage" data-h="3">
+          <span class="runhead">Page 12 · Ajja's letter, on the day of the thread ceremony</span>
+          <div class="hbody" lang="sa">
+            <div class="hink deva">विद्या ददाति विनयं विनयाद् याति पात्रताम्। पात्रत्वाद् धनमाप्नोति धनाद् धर्मं ततः सुखम्॥ एनं श्लोकं मम पिता मह्यम् अददात्। अद्य अहं तुभ्यं ददामि। — अज्जः</div>
+            <div class="htyped deva">विद्या ददाति विनयं विनयाद् याति पात्रताम्। पात्रत्वाद् धनमाप्नोति धनाद् धर्मं ततः सुखम्॥ एनं श्लोकं मम पिता मह्यम् अददात्। अद्य अहं तुभ्यं ददामि। <i>— अज्जः</i></div>
+          </div>
+          <div class="hfoot"><span class="t-hand">Raghavendra Rao · scanned with the app</span><span class="t-typed">Typed by <span data-brand>Empeirya</span> · Sanskrit, handwriting kept as a facsimile</span></div>
+        </div>
+        <!-- 4 · English, a child's hand: a first letter -->
+        <div class="hpage" data-h="4">
+          <span class="runhead">Page 1 · Arjun's first letter, age 7</span>
+          <div class="hbody">
+            <div class="hink kid">Dear Mum, today I lost my first tooth at school. Miss Rao gave me a sticker. I was brave and I only cried a little bit. Love, Arjun</div>
+            <div class="htyped">Dear Mum, today I lost my first tooth at school. Miss Rao gave me a sticker. I was brave and I only cried a little bit. <i>Love, Arjun</i></div>
+          </div>
+          <div class="hfoot"><span class="t-hand">Arjun, 7 · photographed by Mum</span><span class="t-typed">Typed by <span data-brand>Empeirya</span> · spelling kept as he wrote it</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="hgrid">
+      <div class="hcard"><span class="tagl">In every book</span><h3>Write-in pages</h3><p>Any book can carry pages left open, ruled or plain, for a note in your own hand. Add as many as you like.</p></div>
+      <div class="hcard"><span class="tagl">From ₹1,999</span><h3>The Handwritten Edition</h3><p>A hardcover with your personalised prompts printed on every page and room to answer by pen. Fill it in, scan it, and we do the rest.</p></div>
+      <div class="hcard"><span class="tagl">Included</span><h3>Scan any page</h3><p>Photograph a handwritten page in the app. The handwriting stays as it is, with a typed transcript beside it, in your language.</p></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===== WHY IT'S DIFFERENT: three cloth covers that open like books.
+     Hover opens a cover; clicking toggles it (section 6 of js/main.js). ===== -->
+<section class="whysec">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">05 · Why it's different</span>
+      <h2>Most memoir books keep stories. This one keeps what the story taught.</h2>
+      <p class="lede">Three promises, bound in cloth. Open each one.</p>
+    </div>
+    <div class="why">
+      <button class="wcard" type="button" style="--cloth:#4E5A32;--foil:#D9B56A">
+        <span class="wback"><b>Lessons, not only memories</b><p>Every entry ends with what you learned, what you'd change, and what you'd tell someone else. It reads like advice from someone who cares.</p></span>
+        <span class="wfront"><svg><use href="#olive"/></svg><b>Lessons, not only memories</b><i>Open the cover →</i></span>
+      </button>
+      <button class="wcard" type="button" style="--cloth:#1F3B5C;--foil:#F1E3C6">
+        <span class="wback"><b>It listens, then writes</b><p>Rambling 3 a.m. voice notes come back as clear, warm prose — grammar fixed, timeline ordered, your own phrases kept. Your answer is always the final answer.</p></span>
+        <span class="wfront"><svg><use href="#heart"/></svg><b>It listens, then writes</b><i>Open the cover →</i></span>
+      </button>
+      <button class="wcard" type="button" style="--cloth:#6B2328;--foil:#E3C27E">
+        <span class="wback"><b>Yours, private by choice</b><p>Nothing is shared unless you decide. Any entry can stay only yours, go to family, join the book, or be published — your call, every single time.</p></span>
+        <span class="wfront"><svg><use href="#star"/></svg><b>Yours, private by choice</b><i>Open the cover →</i></span>
+      </button>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===== PRICING: one subscription for the app, printing per book ===== -->
+<section id="pricing">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">06 · Pricing</span>
+      <h2>A small subscription. The book, when it is ready.</h2>
+      <p class="lede">The biographer works with you for as long as the story takes. You pay for the hardcover once — when you have seen it designed, page by page — and only for what you put in it.</p>
+    </div>
+    <div class="pay">
+      <div class="payplans">
+        <div class="plan feat">
+          <span class="badge">One per book</span>
+          <div class="pname">The biographer</div>
+          <div class="pnat">Your book's subscription, for you and the people you invite</div>
+          <div class="price">₹199<small> / month · under ₹50 a week</small></div>
+          <ul>
+            <li>Voice, video, photos, writing and scanned handwriting</li>
+            <li>A biographer that listens, asks what matters and drafts every page — your answer is always final</li>
+            <li>You are the admin: invite up to five people to record, and approve everything</li>
+            <li>Private archive, kept for life · or ₹1,999 a year</li>
+          </ul>
+          <a class="btn" href="#join">Start a book</a>
+        </div>
+        <div class="plan">
+          <div class="pname">The book</div>
+          <div class="pnat">Paid once, when you order it</div>
+          <div class="price">from ₹1,999<small> · hardcover, up to 40 pages</small></div>
+          <ul class="pricelist">
+            <li><span>Foil-stamped cover</span><b>+₹250</b></li>
+            <li><span>Pages that open — flaps, drawers, envelopes</span><b>+₹600</b></li>
+            <li><span>A fold-out panorama</span><b>+₹350</b></li>
+            <li><span>A sound panel built into the book</span><b>+₹1,500</b></li>
+            <li><span>A greeting that plays when it opens</span><b>+₹300</b></li>
+            <li><span>Family tree, maps, comics, drawings, voices as QR or printed sound waves</span><b>included</b></li>
+            <li><span>Extra copies for the family</span><b>from ₹1,299</b></li>
+          </ul>
+          <a class="btn ghost" href="app/">See the books in the app</a>
+        </div>
+      </div>
+      <ol class="paysteps">
+        <li><b>1</b><div><h3>Start a book</h3><p>You are its admin. Invite whoever belongs in it — a partner, a grandparent, a co-founder — to record and edit.</p></div></li>
+        <li><b>2</b><div><h3>Talk, whenever there is something</h3><p>No weekly question. Say anything; the biographer asks what matters and drafts the page in your words.</p></div></li>
+        <li><b>3</b><div><h3>See it designed</h3><p>The book is composed from what it holds — its pages, its cover, the way its secrets open. Change anything by asking.</p></div></li>
+        <li><b>4</b><div><h3>Order it when it is right</h3><p>The price is the book plus what you chose to put in it, shown line by line. Printed and delivered in about two to three weeks.</p></div></li>
+        <li><b>5</b><div><h3>Write by hand, too</h3><p>The Handwritten Edition — a hardcover with your own prompts on every page — is ₹1,999. Scan it with the app and it types up beside your handwriting.</p></div></li>
+      </ol>
+    </div>
+    <p class="note">Prices include taxes and are working figures for this prototype.</p>
+  </div>
+</section>
+
+
+<!-- ===== JOIN: early-access form (section 7 of js/main.js) ===== -->
+<section class="join" id="join">
+  <div class="wrap">
+    <div style="display:grid;gap:18px">
+      <h2>Be one of the first twenty.</h2>
+      <p class="lede">We're opening <span data-brand>Empeirya</span> to twenty founding families first — a paid pilot at founding prices: ten Handwritten Editions gifted to parents, ten books written with the companion. Your book, printed, in about ten weeks.</p>
+    </div>
+    <form id="form" novalidate>
+      <label for="f-name">Your name<input id="f-name" name="name" autocomplete="name"></label>
+      <label for="f-contact">Email or phone<input id="f-contact" name="contact"></label>
+      <label for="f-for">The book is about
+        <select id="f-for" name="for"><option>My own life lessons</option><option>My parent's life (a gift)</option><option>My first year as a parent</option><option>My college years</option><option>My startup years</option><option>Moving to a new country</option></select>
+      </label>
+      <button class="btn" type="submit">Apply for the pilot</button>
+      <p class="thanks" id="thanks" hidden></p>
+      <p class="fine">Prototype: this form doesn't send or store anything yet.</p>
+    </form>
+  </div>
+</section>
+
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="wrap">
+    <span><span data-brand>Empeirya</span> · empeirya.com · made in India</span>
+    <span>Your experiences belong to you.</span>
+  </div>
+</footer>
+
+<!-- Scripts go last so the page content exists before they run. -->
+<script src="js/qr.js?v=1795689040"></script>
+<script>window.EMPEIRYA_AUDIO = "app/audio/";</script>
+<script src="js/book-engine.js?v=1795689040"></script>
+<script src="js/main.js?v=1795689040"></script>
+</body>
+</html>

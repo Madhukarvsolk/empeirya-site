@@ -1,0 +1,132 @@
+/* =====================================================================
+   EMPEIRYA — book page designs
+   ---------------------------------------------------------------------
+   Shared by two places:
+     - index.html             (pages inside the flipbooks)
+     - books/*.html           (printable versions that become the PDFs)
+
+   Every size inside a page is in "em", and each page sets its font-size
+   from its own width. That means one page design works at any size: a
+   390px flipbook page, a 230px phone page, or a 148mm printed A5 page.
+   ===================================================================== */
+
+:root{
+  --page:#FBF9F3;          /* paper */
+  --page-ink:#2A2620;      /* body text on paper */
+  --page-soft:#7B7365;     /* captions, page numbers */
+  --gold-ink:#8A6A2E;      /* chapter numbers and labels */
+  --cloth:#4E5A32;         /* cover cloth (changed live by the cover designer) */
+  --foil:#D9B56A;          /* cover foil */
+  --display:"GFS Didot","Didot","Bodoni 72",Georgia,serif;
+  --body:"Commissioner","Segoe UI",system-ui,sans-serif;
+  --book:"EB Garamond",Garamond,Georgia,serif;
+  --hand:"Caveat","Bradley Hand",cursive;
+}
+
+/* Front cover: cloth background, olive-branch emblem, foil-stamped title.
+   --cw is the cover width, set by whoever uses it, so the type scales. */
+.cover{width:100%;height:100%;background:var(--cloth);color:var(--foil);display:grid;grid-template-rows:1fr auto auto auto 1fr auto;justify-items:center;text-align:center;padding:12% 10% 10%;position:relative;overflow:hidden;transition:background .5s,color .5s}
+.cover::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,.035) 0 1px,transparent 1px 3px),repeating-linear-gradient(-45deg,rgba(0,0,0,.05) 0 1px,transparent 1px 3px);pointer-events:none}  /* woven cloth texture */
+.cover::after{content:"";position:absolute;left:0;top:0;bottom:0;width:7%;background:linear-gradient(90deg,rgba(0,0,0,.25),rgba(255,255,255,.06) 60%,transparent)}  /* hinge shadow near the spine */
+.cover .emb{width:34%;grid-row:2;margin-bottom:10%}
+.cover .ct{grid-row:3;font-family:var(--display);font-size:calc(var(--cw)*.1);line-height:1.08;text-wrap:balance}
+.cover .cr{grid-row:4;width:22%;height:1px;background:currentColor;margin:9% 0;opacity:.8}
+.cover .ca{grid-row:5;align-self:start;font-family:var(--book);font-style:italic;font-size:calc(var(--cw)*.06)}
+.cover .cb{grid-row:6;font-family:var(--display);font-size:calc(var(--cw)*.038);letter-spacing:.3em;text-transform:uppercase;opacity:.75}
+
+/* A standard text page: margins, then content stacked top to bottom. */
+.pg{position:absolute;inset:0;padding:11% 11% 13%;display:flex;flex-direction:column;gap:.9em;line-height:1.45}
+.pg .num{position:absolute;bottom:5%;left:0;right:0;text-align:center;font-size:.8em;color:var(--page-soft)}   /* page number */
+.pg .runhead{font-size:.68em;letter-spacing:.22em;text-transform:uppercase;color:var(--page-soft);text-align:center}   /* running head at the top */
+.pg h4{font-family:var(--display);font-weight:400;font-size:1.9em;line-height:1.08;margin:0}
+.pg .sub{font-style:italic;color:var(--page-soft);font-size:.92em}
+.pg p{margin:0;font-size:1em}
+
+/* The six-question entry format: small gold label (dt) + answer (dd). */
+.pg dl{margin:0;display:grid;gap:.85em}
+.pg dt{font-size:.66em;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-ink);font-family:var(--body);font-weight:600}
+.pg dd{margin:0;font-size:1em}
+/* "hl" = the key lesson: handwriting with a highlighter stroke behind it.
+   The stripe is one line tall (1.2em = the line-height) and repeats down
+   the block, so every line gets its own highlighter stroke. */
+.pg .hl{font-family:var(--hand);font-size:1.32em;line-height:1.2;background:linear-gradient(transparent 58%,rgba(217,181,106,.35) 58%) 0 0/100% 1.2em repeat-y}
+
+/* Endpaper: the patterned page inside the front cover, with a dedication card. */
+.endpaper{background:var(--cloth);filter:saturate(.6) brightness(1.5)}
+.endpaper .pg{background:repeating-radial-gradient(circle at 0 0,transparent 0 14px,rgba(255,255,255,.08) 14px 15px);justify-content:center}
+.dedic{background:var(--page);padding:1.4em 1.5em;border-radius:3px;font-family:var(--hand);font-size:1.5em;line-height:1.2;color:#2E3A5E;transform:rotate(-1.5deg);box-shadow:0 6px 16px -8px rgba(0,0,0,.35)}
+.dedic small{display:block;text-align:right;margin-top:.6em;font-size:.85em}
+
+/* Title page. */
+.titlepg{justify-content:center;text-align:center;align-items:center}
+.titlepg .tb{font-family:var(--display);letter-spacing:.3em;text-transform:uppercase;font-size:.7em;color:var(--page-soft)}
+.titlepg h4{font-size:2.4em}
+
+/* Contents list with dotted leaders. */
+.toc{list-style:none;margin:0;padding:0;display:grid;gap:.7em}
+.toc li{display:grid;grid-template-columns:2.2em 1fr auto;gap:.4em;align-items:baseline;border-bottom:1px dotted rgba(0,0,0,.2);padding-bottom:.4em}
+.toc b{font-family:var(--display);font-weight:400;color:var(--gold-ink)}
+.toc span{font-variant-numeric:tabular-nums}
+.toc i{display:block;font-size:.85em;color:var(--page-soft)}
+
+/* Chapter opener: big numeral, title, pull-quote. */
+.chap{justify-content:center}
+.chap .roman{font-family:var(--display);font-size:5.5em;line-height:.9;color:var(--gold-ink)}
+.chap h4{font-size:2.6em}
+.chap blockquote{margin:1em 0 0;font-style:italic;font-size:1.1em;border-left:2px solid #C9A45C;padding-left:.9em}
+.chap .meta{font-family:var(--body);font-size:.7em;color:var(--page-soft);letter-spacing:.06em}
+
+/* "Hear it in their voice" QR strip. The QR is drawn by JavaScript on a
+   <canvas class="qrc">. In this prototype it is decorative only. */
+.qr{display:flex;align-items:center;gap:.9em;margin-top:auto;padding-top:.8em;border-top:1px solid rgba(0,0,0,.12)}
+.qr canvas{width:4.4em;height:4.4em;image-rendering:pixelated;flex:none}
+.qr p{font-size:.82em;line-height:1.3}
+.qr p b{display:block;font-family:var(--body);font-size:.85em;font-weight:600;letter-spacing:.04em}
+
+/* Sealed "letter for later" envelope, drawn entirely in CSS. */
+.envelope{position:relative;margin:1em auto 0;width:86%;aspect-ratio:1.5;background:#EFE6D2;border-radius:3px;box-shadow:0 8px 18px -10px rgba(0,0,0,.4);display:grid;place-items:center;overflow:hidden}
+.envelope::before{content:"";position:absolute;top:0;left:0;right:0;height:55%;background:#E6DABF;clip-path:polygon(0 0,100% 0,50% 100%)}   /* the flap */
+.seal{position:relative;width:2.6em;height:2.6em;border-radius:50%;background:radial-gradient(circle at 35% 35%,#9B3A30,#6B2328);color:#F2D9B0;display:grid;place-items:center;font-family:var(--display);font-size:1.15em;margin-top:-8%;box-shadow:0 2px 4px rgba(0,0,0,.35)}   /* wax seal */
+.letter-to{font-family:var(--hand);font-size:1.5em;text-align:center;line-height:1.15;margin:.6em 0 0}
+
+/* Back cover. */
+.backcover{background:var(--cloth);color:var(--foil);display:grid;place-items:center;text-align:center;transition:background .5s}
+.backcover div{display:grid;gap:.6em;justify-items:center;font-family:var(--display);letter-spacing:.25em;text-transform:uppercase;font-size:.8em}
+.backcover svg{width:3.4em}
+.backcover small{font-family:var(--book);font-style:italic;letter-spacing:0;text-transform:none;font-size:1.1em;opacity:.8}
+
+/* Taped-in photos (used in the first-year baby book).
+   The pictures are hand-drawn SVG illustrations standing in for the
+   family's own photos, which they would upload in the real product. */
+.photo{margin:0 auto;background:#fff;padding:.45em .45em .3em;box-shadow:0 5px 12px -5px rgba(0,0,0,.4);transform:rotate(-2deg);width:82%;position:relative;flex:none}
+.photo.r{transform:rotate(1.8deg)}     /* tilted the other way */
+.photo.sm{width:52%}
+.photo.md{width:66%}
+.photo::before{content:"";position:absolute;top:-.55em;left:50%;width:3.6em;height:1.1em;margin-left:-1.8em;background:rgba(232,220,190,.75);transform:rotate(-3deg)}   /* strip of tape */
+.photo svg{display:block;width:100%;height:auto}
+.photo figcaption{font-family:var(--hand);font-size:1.1em;text-align:center;color:#3B3A36;line-height:1.2;padding-top:.25em}
+
+/* "The year in numbers" grid. */
+.nums{display:grid;grid-template-columns:1fr 1fr;gap:.5em 1em;text-align:center}
+.nums div{border-top:1px solid rgba(0,0,0,.12);padding-top:.35em}
+.nums b{display:block;font-family:var(--display);font-weight:400;font-size:1.7em;line-height:1;color:var(--gold-ink);font-variant-numeric:tabular-nums}
+.nums span{font-size:.75em;color:var(--page-soft);font-family:var(--body)}
+
+/* Ruled notebook page left blank for the child. */
+.ruled{background:repeating-linear-gradient(transparent 0 1.9em,rgba(46,58,94,.18) 1.9em calc(1.9em + 1px));background-position:0 5.2em}
+.ruled .hand{font-family:var(--hand);font-size:1.25em;color:#8A8270;text-align:center}
+
+/* Numbered tips list. */
+.tips{margin:0;padding:0;list-style:none;display:grid;gap:.9em;counter-reset:t}
+.tips li{display:grid;grid-template-columns:1.6em 1fr;gap:.3em;counter-increment:t}
+.tips li::before{content:counter(t);font-family:var(--display);color:var(--gold-ink);font-size:1.3em;line-height:1}
+
+/* Handwritten pages: a scanned page of someone's own handwriting, and a
+   blank write-in page. The ruling is drawn on the text block itself, so
+   the lines always sit exactly under the handwriting. */
+.handpg{justify-content:flex-start}
+.pg .hn{margin:.4em 0 0;font-family:var(--hand);font-size:1.75em;line-height:1.38;color:#26335A;transform:rotate(-.4deg);background:repeating-linear-gradient(transparent 0 calc(1.38em - 1px),rgba(38,51,90,.2) calc(1.38em - 1px) 1.38em)}
+.handpg .hn{flex:1;margin-bottom:2.2em}   /* the ruling runs to the foot of the page */
+.hn.empty{margin-top:.4em}
+.pg .hand-hint{font-family:var(--hand);font-size:1.2em;color:#8A8270;text-align:center;margin:0}
+.scantag{margin-top:auto;font-family:var(--body);font-size:.6em;letter-spacing:.14em;text-transform:uppercase;color:var(--page-soft);text-align:center}

@@ -1,0 +1,192 @@
+<!doctype html>
+<!--
+  =====================================================================
+  EMPEIRYA — app prototype
+  ---------------------------------------------------------------------
+  A clickable phone prototype of the real app: start a book, choose
+  features, capture, talk to the companion, read the finished book page
+  by page (with voice), change it by asking, and order.
+
+  "Features, not templates": the book is composed by compose() in
+  app.js from the chosen features into a layout plan, and every page is
+  drawn from that plan by renderPage(). Change a feature or type a
+  request and the plan is rebuilt; nothing is a fixed template.
+
+  Files:
+    app/app.css            look of the app and the reader
+    app/app.js             screens, the composer, the reader, voice, edits
+    ../css/book-pages.css  page designs, shared with the website's books
+    ../js/qr.js            draws the decorative QR codes
+  Placeholder content is the website's first-year sample book.
+  =====================================================================
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Empeirya — App prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=GFS+Didot&family=Commissioner:wght@300;400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Caveat:wght@500;700&family=Fredoka:wght@400;500;600;700&family=Comic+Neue:wght@700&family=Bangers&display=swap">
+<link rel="stylesheet" href="../css/book-pages.css?v=1795689040">
+<link rel="stylesheet" href="../css/book-engine.css?v=1795689040">
+<link rel="stylesheet" href="app.css?v=1795689040">
+</head>
+<body>
+
+<!-- Reusable drawings (same as the website). -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="olive" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M32 58C32 40 30 22 22 6"/><path d="M32 58C32 40 34 22 42 6"/></g><g fill="currentColor"><ellipse cx="24" cy="16" rx="5.5" ry="2.2" transform="rotate(-35 24 16)"/><ellipse cx="18" cy="24" rx="5.5" ry="2.2" transform="rotate(20 18 24)"/><ellipse cx="27" cy="30" rx="5.5" ry="2.2" transform="rotate(-40 27 30)"/><ellipse cx="22" cy="40" rx="5.5" ry="2.2" transform="rotate(25 22 40)"/><ellipse cx="40" cy="16" rx="5.5" ry="2.2" transform="rotate(35 40 16)"/><ellipse cx="46" cy="24" rx="5.5" ry="2.2" transform="rotate(-20 46 24)"/><ellipse cx="37" cy="30" rx="5.5" ry="2.2" transform="rotate(40 37 30)"/><ellipse cx="42" cy="40" rx="5.5" ry="2.2" transform="rotate(-25 42 40)"/><circle cx="29" cy="47" r="2.2"/><circle cx="36" cy="49" r="2.2"/></g></symbol>
+  <symbol id="heart" viewBox="0 0 64 64"><path fill="currentColor" d="M32 54C18 44 8 35 8 23a12 12 0 0 1 24-4 12 12 0 0 1 24 4c0 12-10 21-24 31z"/></symbol>
+  <symbol id="foot" viewBox="-12 -24 24 40"><g fill="#8C6F56"><ellipse cx="0" cy="2" rx="7" ry="12"/><circle cx="-5.5" cy="-14" r="2.6"/><circle cx="-1.5" cy="-16.5" r="2.4"/><circle cx="2.5" cy="-16" r="2.2"/><circle cx="5.5" cy="-13.5" r="2"/><circle cx="7.2" cy="-10.3" r="1.7"/></g></symbol>
+</svg>
+
+<main class="stagewrap">
+
+  <!-- Left of the phone on wide screens: what each screen shows. -->
+  <aside class="explain" aria-live="polite">
+    <p class="eyebrow">Empeirya · app prototype</p>
+    <h1 id="exTitle">Library</h1>
+    <p id="exBody"></p>
+    <nav class="exnav" aria-label="Jump to a screen">
+      <button data-go="home">1 · Library</button>
+      <button data-go="start">2 · Start a book</button>
+      <button data-go="features">3 · Choose features</button>
+      <button data-go="capture">4 · Capture</button>
+      <button data-go="companion">5 · Companion</button>
+      <button data-go="book">6 · Read &amp; edit the book</button>
+      <button data-go="order">7 · Proof &amp; order</button>
+    </nav>
+    <p class="fine">Prototype: nothing is recorded, sent or charged. Voices are read aloud by your browser as stand-ins for real recordings. Placeholder content until real examples arrive.</p>
+  </aside>
+
+  <!-- ===== THE PHONE ===== -->
+  <div class="phone" id="phone">
+    <div class="notch" aria-hidden="true"></div>
+    <div class="statusbar" aria-hidden="true"><span>9:41</span><span class="sig">▂▄▆ ◔</span></div>
+
+    <div class="screens">
+
+      <!-- 1 · Library -->
+      <section class="scr" data-s="home">
+        <header class="ahead"><span class="brand"><svg><use href="#olive"/></svg>Empeirya</span></header>
+        <h2 class="h">Your books</h2>
+        <div class="shelf" id="shelf"></div>
+        <button type="button" class="btn primary wide" data-go="start">＋ Start a new book</button>
+        <h3 class="sub" id="feedHead">From the family</h3>
+        <ul class="feed" id="feed"></ul>
+      </section>
+
+      <!-- 2 · Start a book -->
+      <section class="scr" data-s="start">
+        <header class="ahead"><button type="button" class="back" data-go="home">‹ Back</button><span class="small">New book · step 1 of 2</span></header>
+        <p class="bubble ai">What is this book about? Talk or type — any life, any age, any language.</p>
+        <label class="field"><small>It’s about</small><textarea id="inAbout" rows="3"></textarea></label>
+        <label class="field"><small>Title</small><input id="inTitle"></label>
+        <label class="field"><small>By</small><input id="inBy"></label>
+        <p class="bubble ai" id="startNote"></p>
+        <button type="button" class="btn primary wide" data-go="features">Next: choose features</button>
+      </section>
+
+      <!-- 3 · Choose features -->
+      <section class="scr" data-s="features">
+        <header class="ahead"><button type="button" class="back" data-go="start">‹ Back</button><span class="small">New book · step 2 of 2</span></header>
+        <div class="fpreview"><span class="minicover" id="featCover"></span><p class="small" id="featSummary"></p></div>
+        <div id="featureList"></div>
+        <div class="pricebar"><div><small>Your book</small><b id="featPrice"></b></div><button type="button" class="btn primary" id="makeBook">Make my book</button></div>
+      </section>
+
+      <!-- 4 · Capture -->
+      <section class="scr" data-s="capture">
+        <header class="ahead"><span class="brand">Capture</span><span class="small" id="capCount"></span></header>
+        <div class="qcard"><small>Your biographer is listening</small><p>Say anything — a moment, a worry, a joke. It asks what matters and drafts the page.</p><small id="capQ"></small></div>
+        <div class="recwrap">
+          <button type="button" class="recbtn" id="recBtn" aria-label="Record a voice note"><span class="dot"></span></button>
+          <p class="rectime" id="recTime">Tap to record</p>
+          <div class="wavebar" id="recWave" aria-hidden="true"></div>
+        </div>
+        <div class="capgrid">
+          <button type="button" class="capbtn" data-cap="Photo">Photo</button>
+          <button type="button" class="capbtn" data-cap="Video">Video</button>
+          <button type="button" class="capbtn" data-cap="Scanned page">Scan a page</button>
+          <button type="button" class="capbtn" data-cap="Note">Type</button>
+        </div>
+        <h3 class="sub">Recent</h3>
+        <ul class="entries" id="entries"></ul>
+      </section>
+
+      <!-- 5 · Companion -->
+      <section class="scr" data-s="companion">
+        <header class="ahead"><span class="brand">Companion</span><span class="small">your biographer</span></header>
+        <div class="thread" id="thread" aria-live="polite"></div>
+        <form class="composer" id="compForm"><input id="compIn" placeholder="Answer, or say anything…" aria-label="Message"><button class="btn primary sm">Send</button></form>
+      </section>
+
+      <!-- 6 · Read & edit the book -->
+      <section class="scr" data-s="book">
+        <header class="ahead"><span class="brand book-h" id="bookHead"></span><span class="hbtns"><button type="button" class="pillbtn" id="whyBtn">Why</button><button type="button" class="pillbtn" id="fullBtn">Full size</button></span></header>
+        <div class="viewer" id="viewer">
+          <div class="bookbody" id="bookbody">
+            <div class="vstage" id="vstage" aria-live="polite"></div>
+            <div class="strip" id="strip" aria-label="Sound panel, built into the book"></div>
+          </div>
+        </div>
+        <div class="vctl"><button type="button" id="pPrev" aria-label="Previous page">‹</button><span id="pLabel"></span><button type="button" id="pNext" aria-label="Next page">›</button></div>
+        <div class="ask">
+          <div class="chips" id="chips"></div>
+          <form id="askForm"><input id="askIn" placeholder="Ask the designer: “make it warmer”…" aria-label="Ask the designer"><button class="btn primary sm">Go</button></form>
+          <p class="reply" id="askReply" aria-live="polite"></p>
+        </div>
+        <div class="bookactions">
+          <button type="button" class="btn ghost sm" id="undoBtn" disabled>Undo</button>
+          <button type="button" class="btn ghost sm" data-go="features">Features</button>
+          <button type="button" class="btn primary sm" data-go="order">Looks good · Order</button>
+        </div>
+        <div class="why" id="whyPanel" hidden>
+          <h3>Why it looks like this</h3>
+          <ul id="whyList"></ul>
+          <button type="button" class="btn ghost sm" id="whyClose">Close</button>
+        </div>
+      </section>
+
+      <!-- 7 · Proof & order -->
+      <section class="scr" data-s="order">
+        <header class="ahead"><button type="button" class="back" data-go="book">‹ Book</button><span class="small">Proof &amp; order</span></header>
+        <div class="ospec" id="ospec"></div>
+        <div class="copies"><span>Copies</span><button type="button" id="cMinus" aria-label="Fewer copies">−</button><b id="cNum">1</b><button type="button" id="cPlus" aria-label="More copies">＋</button></div>
+        <ul class="checklist"><li>Names and dates checked</li><li>Every photo at print resolution</li><li>Text inside the safe area</li></ul>
+        <div class="lines" id="olines"></div>
+        <button type="button" class="btn primary wide" id="payBtn"></button>
+        <ol class="track" id="track" hidden>
+          <li class="done">Ordered</li><li class="done">Proof checked by our team</li><li class="now">Printing</li><li>Shipped</li><li>Delivered</li>
+        </ol>
+      </section>
+
+      <!-- Shown while the book is being composed. -->
+      <div class="composing" id="composing" hidden><span class="spin"></span><b>Composing your book…</b><span id="compSteps" class="small"></span></div>
+    </div>
+
+    <nav class="tabs" aria-label="App sections">
+      <button type="button" data-go="home">Library</button>
+      <button type="button" data-go="capture">Capture</button>
+      <button type="button" data-go="companion">Companion</button>
+      <button type="button" data-go="book">Book</button>
+    </nav>
+  </div>
+</main>
+
+<!-- Full-size reader: the book as two-page spreads. -->
+<div class="reader" id="reader" hidden role="dialog" aria-label="The book, full size">
+  <div class="rtop"><b id="rTitle"></b><button type="button" id="rClose">Close ✕</button></div>
+  <div class="rstage"><div class="bookbody big" id="rBody"><div class="spread" id="spread"></div><div class="strip big" id="rStrip" aria-label="Sound panel, built into the book"></div></div></div>
+  <div class="rctl"><button type="button" id="rPrev" aria-label="Previous spread">‹</button><span id="rLabel"></span><button type="button" id="rNext" aria-label="Next spread">›</button></div>
+</div>
+
+<!-- "Now playing" bar for voice recordings. -->
+<div class="playing" id="playing" hidden role="status"><span class="pwave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="pltext"><b id="plLabel"></b><small id="plText"></small></span><button type="button" id="plStop">Stop</button></div>
+
+<script src="../js/qr.js?v=1795689040"></script>
+<script src="../js/book-engine.js?v=1795689040"></script>
+<script src="app.js?v=1795689040"></script>
+</body>
+</html>

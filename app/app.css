@@ -1,0 +1,223 @@
+/* =====================================================================
+   EMPEIRYA — app prototype styles
+   ---------------------------------------------------------------------
+     1. Tokens and the page around the phone
+     2. The phone, its screens and tab bar
+     3. App pieces (buttons, fields, cards, chat, capture, features)
+     4. The book reader in the phone, the sound strip, "Ask the designer"
+     5. Book moods: the design tokens each mood sets on the pages
+     6. Page blocks the prototype adds to css/book-pages.css
+     7. The full-size reader and the "now playing" bar
+     8. Animations
+   ===================================================================== */
+
+/* 1. TOKENS AND THE PAGE AROUND THE PHONE ----------------------------- */
+:root{
+  --ivory:#F5F2EA; --paper:#FCFBF7; --ink:#191A12; --soft:#5E6050; --line:rgba(25,26,18,.12);
+  --gold:#9D7B36; --gold-l:#C9A45C; --olive:#51602B; --night:#14170E; --rec:#B3261E;
+  --ui:"Commissioner","Segoe UI",system-ui,sans-serif;
+  --disp:"GFS Didot","Didot",Georgia,serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--night);color:var(--ink);font-family:var(--ui);-webkit-font-smoothing:antialiased}
+[hidden]{display:none!important}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--gold-l);outline-offset:2px;border-radius:4px}
+
+.stagewrap{min-height:100vh;display:flex;align-items:center;justify-content:center;gap:64px;padding:32px 16px}
+.explain{width:340px;color:#ECEBDF;display:grid;gap:16px;align-content:start}
+.explain .eyebrow{margin:0;font-size:11px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-l)}
+.explain h1{margin:0;font-family:var(--disp);font-weight:400;font-size:38px;line-height:1.1}
+.explain p{margin:0;color:#B9B8A6;font-size:15px;line-height:1.6}
+.exnav{display:grid;gap:6px;margin-top:8px}
+.exnav button{text-align:left;background:transparent;border:1px solid #3A3E30;color:#C9C8B6;border-radius:3px;padding:8px 12px;font-size:13.5px}
+.exnav button[aria-current="true"]{border-color:var(--gold-l);color:#ECEBDF;background:#1C2016}
+.explain .fine{font-size:12px;color:#8A8C7A}
+@media (max-width:1100px){.explain{display:none}}
+
+/* 2. THE PHONE --------------------------------------------------------- */
+.phone{position:relative;width:390px;height:844px;flex:none;border-radius:54px;border:12px solid #0B0D08;background:var(--ivory);box-shadow:0 60px 120px -40px rgba(0,0,0,.9),0 0 0 1px #2A2D22;overflow:hidden;display:flex;flex-direction:column}
+.notch{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:118px;height:30px;border-radius:20px;background:#0B0D08;z-index:30}
+.statusbar{height:44px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:4px 26px 0;font-size:14px;font-weight:600}
+.statusbar .sig{font-size:11px;letter-spacing:1px}
+.screens{position:relative;flex:1;min-height:0}
+.scr{position:absolute;inset:0;overflow-y:auto;padding:6px 18px 18px;display:none;flex-direction:column;gap:14px;scrollbar-width:none}
+.scr.on{display:flex}
+.tabs{flex:none;height:62px;display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);background:var(--paper)}
+.tabs button{border:0;background:none;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--soft)}
+.tabs button[aria-current="true"]{color:var(--gold)}
+@media (max-width:520px){
+  .stagewrap{padding:0}
+  .phone{width:100vw;height:100dvh;border:0;border-radius:0}
+  .notch,.statusbar{display:none}
+}
+
+/* 3. APP PIECES -------------------------------------------------------- */
+.ahead{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:40px}
+.brand{display:flex;align-items:center;gap:8px;font-family:var(--disp);font-size:20px;letter-spacing:.06em}
+.brand svg{width:22px;height:22px;color:var(--olive)}
+.book-h{font-size:17px;letter-spacing:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:170px}
+.h{margin:4px 0 0;font-family:var(--disp);font-weight:400;font-size:30px}
+.sub{margin:6px 0 0;font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+.small{font-size:12.5px;color:var(--soft);line-height:1.45}
+.back{border:0;background:none;color:var(--gold);font-weight:600;padding:0}
+.btn{border:1px solid var(--ink);background:var(--ink);color:var(--ivory);border-radius:3px;padding:13px 18px;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+.btn.wide{width:100%}
+.btn.sm{padding:9px 13px;font-size:11px}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn:disabled{opacity:.35;cursor:default}
+.pillbtn{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:6px 11px;font-size:12px;font-weight:600}
+.hbtns{display:flex;gap:6px}
+
+.bookcard{display:flex;gap:14px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--paper);border-radius:6px;padding:14px}
+.bc-text{display:grid;gap:5px;min-width:0}
+.bc-text b{font-family:var(--disp);font-weight:400;font-size:19px}
+.prog{height:4px;background:#E6E1D3;border-radius:2px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--gold)}
+.feed{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.feed li{display:flex;gap:10px;align-items:center;font-size:13.5px}
+.av{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:13px;font-weight:600;flex:none}
+
+.bubble{margin:0;padding:11px 14px;border-radius:12px;font-size:14px;line-height:1.45;max-width:90%}
+.bubble.ai{align-self:flex-start;background:var(--paper);border:1px solid var(--line);border-bottom-left-radius:3px}
+.bubble.me{align-self:flex-end;background:var(--olive);color:#fff;border-bottom-right-radius:3px}
+.bubble.page{max-width:100%;background:rgba(157,123,54,.1);border:1px dashed var(--gold);font-family:"EB Garamond",Georgia,serif;font-size:15px}
+.bubble.voice{display:flex;align-items:center;gap:10px}
+.bubble.voice .w{display:flex;gap:2px;align-items:center;height:18px}
+.bubble.voice .w i{width:3px;border-radius:2px;background:rgba(255,255,255,.8)}
+.typing{align-self:flex-start;color:var(--soft);font-size:13px}
+.field{display:grid;gap:4px}
+.field small{font-size:10.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--soft)}
+.field input,.field textarea{font:inherit;font-size:15px;border:1px solid var(--line);background:var(--paper);border-radius:4px;padding:10px 12px;color:var(--ink);resize:none}
+
+/* Features screen */
+.fpreview{display:flex;gap:14px;align-items:center;background:#ECE7D8;border-radius:8px;padding:14px}
+#featureList{display:grid;gap:20px}
+.fgroup{display:grid;gap:8px}
+.fgroup > b{font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+.opts{display:flex;flex-wrap:wrap;gap:6px}
+.opt{border:1px solid var(--line);background:var(--paper);border-radius:4px;padding:8px 11px;font-size:13px;text-align:left;display:grid;gap:1px}
+.opt small{font-size:11px;color:var(--soft)}
+.opt[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--ivory)}
+.opt[aria-pressed="true"] small{color:#C9C8B6}
+.toggle{display:flex;justify-content:space-between;align-items:center;gap:12px;border:0;border-bottom:1px solid var(--line);background:none;padding:9px 0;font-size:14px;text-align:left;width:100%}
+.toggle .sw{width:40px;height:24px;border-radius:12px;background:#D8D3C3;position:relative;flex:none;transition:background .2s}
+.toggle .sw::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .2s}
+.toggle[aria-pressed="true"] .sw{background:var(--olive)}
+.toggle[aria-pressed="true"] .sw::after{transform:translateX(16px)}
+.pricebar{position:sticky;bottom:-18px;margin:0 -18px -18px;padding:12px 18px;background:var(--paper);border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px}
+.pricebar small{display:block;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--soft)}
+.pricebar b{font-family:var(--disp);font-weight:400;font-size:24px}
+
+/* Capture screen */
+.qcard{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:grid;gap:4px}
+.qcard small{font-size:10.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+.qcard p{margin:0;font-family:var(--disp);font-size:20px;line-height:1.25}
+.recwrap{display:grid;justify-items:center;gap:8px;padding:6px 0}
+.recbtn{width:92px;height:92px;border-radius:50%;border:4px solid #E3DED0;background:var(--paper);display:grid;place-items:center}
+.recbtn .dot{width:58px;height:58px;border-radius:50%;background:var(--rec);transition:border-radius .2s,transform .2s}
+.recbtn.on .dot{border-radius:10px;transform:scale(.6)}
+.rectime{margin:0;font-size:13px;color:var(--soft);font-variant-numeric:tabular-nums}
+.wavebar{display:flex;gap:3px;align-items:center;height:26px}
+.wavebar i{width:3px;border-radius:2px;background:var(--rec);opacity:.8}
+.capgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.capbtn{border:1px solid var(--line);background:var(--paper);border-radius:6px;padding:12px 4px;font-size:12px;font-weight:600}
+.entries{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.entries li{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-size:13.5px;line-height:1.4;display:grid;gap:3px}
+.entries li small{font-size:11px;color:var(--soft);letter-spacing:.04em}
+.entries li.new{border-color:var(--gold)}
+
+/* Companion screen */
+.thread{display:flex;flex-direction:column;gap:10px;flex:1}
+.composer{display:flex;gap:6px;position:sticky;bottom:-18px;margin:0 -18px -18px;padding:10px 18px 14px;background:var(--ivory);border-top:1px solid var(--line)}
+.composer input,#askForm input{flex:1;min-width:0;font:inherit;font-size:14px;border:1px solid var(--line);border-radius:4px;padding:9px 11px;background:var(--paper)}
+
+/* Order screen */
+.ospec{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:14px;font-size:13.5px}
+.ospec dt{color:var(--soft)}
+.ospec dd{margin:0;font-weight:500}
+.copies{display:flex;align-items:center;gap:12px;font-size:14px}
+.copies span{flex:1}
+.copies button{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--paper);font-size:18px}
+.checklist{list-style:none;margin:0;padding:0;display:grid;gap:4px;font-size:13px;color:var(--olive)}
+.checklist li::before{content:"✓  ";font-weight:600}
+.lines{display:grid;gap:6px;font-size:13.5px}
+.lines .ln{display:flex;justify-content:space-between;gap:10px}
+.lines .ln.tot{border-top:1px solid var(--line);padding-top:8px;font-weight:600;font-size:15px}
+.lines .note{font-size:11.5px;color:var(--soft)}
+.track{list-style:none;margin:0;padding:0;display:grid;gap:8px;font-size:13.5px}
+.track li{display:flex;gap:10px;align-items:center;color:var(--soft)}
+.track li::before{content:"";width:12px;height:12px;border-radius:50%;border:2px solid #CFC9B8;flex:none}
+.track li.done{color:var(--ink)}
+.track li.done::before{background:var(--olive);border-color:var(--olive)}
+.track li.now{color:var(--ink);font-weight:600}
+.track li.now::before{border-color:var(--gold);background:var(--gold-l)}
+
+.composing{position:absolute;inset:0;z-index:20;background:rgba(245,242,234,.96);display:grid;place-content:center;justify-items:center;gap:12px;text-align:center;padding:30px}
+.composing b{font-family:var(--disp);font-weight:400;font-size:24px}
+.spin{width:38px;height:38px;border-radius:50%;border:3px solid #E3DED0;border-top-color:var(--gold);animation:spin 1s linear infinite}
+
+/* 4. THE BOOK READER IN THE PHONE ------------------------------------- */
+.scr[data-s="book"]{overflow:hidden;gap:9px}
+.viewer{flex:1;min-height:0;display:flex;gap:8px;align-items:center;justify-content:center;background:#E7E1D1;border-radius:10px;padding:10px}
+.vstage{position:relative;flex:none;touch-action:pan-y}
+.vctl{display:flex;justify-content:center;align-items:center;gap:16px;font-size:12.5px;color:var(--soft);font-variant-numeric:tabular-nums}
+.vctl button{width:32px;height:32px;border-radius:50%;border:1px solid var(--line);background:var(--paper);font-size:18px;line-height:1}
+.vctl button:disabled{opacity:.3}
+.ask{display:grid;gap:7px}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.chips button{flex:none;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:6px 11px;font-size:12px;white-space:nowrap}
+#askForm{display:flex;gap:6px}
+.reply{margin:0;font-size:12.5px;color:var(--olive);min-height:1.2em;line-height:1.4}
+.bookactions{display:flex;gap:6px;justify-content:space-between}
+.bookactions .btn.primary{flex:1}
+.why{position:absolute;left:12px;right:12px;bottom:12px;z-index:10;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:16px;box-shadow:0 20px 40px -20px rgba(0,0,0,.4);display:grid;gap:10px;max-height:70%;overflow:auto}
+.why h3{margin:0;font-family:var(--disp);font-weight:400;font-size:20px}
+.why ul{margin:0;padding-left:18px;display:grid;gap:6px;font-size:13px;line-height:1.45}
+
+/* 7. FULL-SIZE READER AND "NOW PLAYING" -------------------------------- */
+.reader{position:fixed;inset:0;z-index:50;background:rgba(12,14,9,.95);display:flex;flex-direction:column;color:#ECEBDF}
+.rtop{display:flex;justify-content:space-between;align-items:center;padding:16px 24px}
+.rtop b{font-family:var(--disp);font-weight:400;font-size:22px}
+.rtop button,.rctl button{border:1px solid #3A3E30;background:transparent;color:#ECEBDF;border-radius:999px;padding:8px 16px}
+.rstage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;gap:18px;padding:0 24px}
+.spread{display:flex;filter:drop-shadow(0 30px 40px rgba(0,0,0,.6))}
+.rpage{position:relative;width:var(--pw);height:var(--ph)}
+.rpage .bpage{box-shadow:none}
+.rpage.left .bpage{border-radius:4px 0 0 4px;transform-origin:right center}
+.rpage.left .bpage::after{background:linear-gradient(270deg,rgba(0,0,0,.14),transparent 8%)}
+.rpage.blank{visibility:hidden}
+.rctl{display:flex;justify-content:center;align-items:center;gap:18px;padding:14px 0 22px;font-size:14px;color:#B9B8A6;font-variant-numeric:tabular-nums}
+.rctl button{width:42px;height:42px;padding:0;font-size:20px}
+.rctl button:disabled{opacity:.3}
+
+.playing{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:60;display:flex;align-items:center;gap:12px;max-width:min(92vw,460px);background:#191A12;color:#ECEBDF;border:1px solid #3A3E30;border-radius:999px;padding:10px 12px 10px 18px;box-shadow:0 20px 40px -10px rgba(0,0,0,.6)}
+.pltext{display:grid;gap:2px;min-width:0}
+.pltext b{font-size:13.5px}
+.pltext small{font-size:12px;color:#B9B8A6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.playing button{border:1px solid #3A3E30;background:transparent;color:#ECEBDF;border-radius:999px;padding:6px 12px;font-size:12px}
+.pwave{display:flex;gap:3px;align-items:center;height:20px}
+.pwave i{width:3px;height:16px;border-radius:2px;background:var(--gold-l)}
+
+/* 8. ANIMATIONS --------------------------------------------------------- */
+@media (prefers-reduced-motion:no-preference){
+  .bpage.turn-out{animation:turnOut .55s ease-in forwards}
+  .bpage.turn-in{animation:turnIn .55s ease-out}
+  .spread.fade{animation:fadeIn .45s ease-out}
+  .pwave i{animation:wv .9s ease-in-out infinite alternate}
+  .pwave i:nth-child(2){animation-delay:.15s}.pwave i:nth-child(3){animation-delay:.3s}.pwave i:nth-child(4){animation-delay:.45s}.pwave i:nth-child(5){animation-delay:.6s}
+  .wavebar i{animation:wv .7s ease-in-out infinite alternate}
+  .scr.on{animation:fadeIn .25s ease-out}
+}
+@keyframes turnOut{to{transform:perspective(1400px) rotateY(-100deg);opacity:.15}}
+@keyframes turnIn{from{transform:perspective(1400px) rotateY(-100deg);opacity:.15}}
+@keyframes fadeIn{from{opacity:0}}
+@keyframes wv{to{transform:scaleY(.3)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+
+/* 12. TWO BOOKS ON THE SHELF -------------------------------------------- */
+.shelf{display:grid;gap:10px}
+
+#olines .ln.sub{color:var(--soft);font-size:12.5px;border-top:1px dashed var(--line);padding-top:8px;margin-top:4px}
